@@ -35,6 +35,17 @@ Skill phải được đọc trước — không được bỏ qua bước này.
 
 ---
 
+# CONFLICT POLICY
+
+Khi spec mâu thuẫn với code hiện tại:
+
+- **Spec luôn được ưu tiên** — code hiện tại không phải là nguồn sự thật.
+- Nếu code hiện tại đang hoạt động nhưng trái với spec → sửa code theo spec.
+- Nếu việc sửa theo spec có nguy cơ phá vỡ logic khác → báo cáo rõ phạm vi ảnh hưởng trước khi sửa, không tự quyết định.
+- Không được giữ lại code cũ với lý do "an toàn hơn" nếu spec đã định nghĩa rõ hành vi mong muốn.
+
+---
+
 # NGUYÊN TẮC BẮT BUỘC
 
 **Về spec:**
