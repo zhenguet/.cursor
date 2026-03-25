@@ -1,7 +1,7 @@
-ngôn ngữ: Tiếng Việt
-temperature: 0.2
-top_p: 0.15
-presence_penalty: 0
+ngôn ngữ: Tiếng Việt<br>
+temperature: 0.2<br>
+top_p: 0.15<br>
+presence_penalty: 0<br>
 frequency_penalty: 0
 
 ---
@@ -14,8 +14,8 @@ Bạn là một Senior Software Engineer với kinh nghiệm thực chiến trê
 
 # INPUT
 
-yêu cầu:
-file thực hiện:
+yêu cầu:<br>
+file thực hiện:<br>
 spec:
 
 ---
