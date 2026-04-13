@@ -1,0 +1,78 @@
+# 🧠 Cursor Rules — Tamada CoreSystem Frontend
+# This file defines how Cursor AI behaves across the entire project.
+# It ensures consistent tone, style, and creativity for better developer experience.
+
+---
+
+## ⚙️ Global Default Behavior
+```cursor
+- match: "*"
+  rules:
+    # Keep creativity low for accurate and consistent code generation
+    - set default_creativity = 0.2
+
+    # Maintain concise and technical communication
+    - set style = "concise"
+    - set tone = "technical"
+
+    # Keep explanations short and focused on code
+    - set explanation_preference = "minimal"
+```
+
+---
+
+## ⚛️ React & TypeScript Files
+```cursor
+- match: "*.tsx"
+  rules:
+    # Enforce TypeScript + React context
+    - set language = "typescript"
+    - set framework = "react"
+
+    # Encourage clean, minimal code style
+    - set code_style = "clean"
+    - set comment_style = "inline-minimal"
+
+    # Maintain low creativity for predictable outputs
+    - set default_creativity = 0.2
+```
+
+```cursor
+- match: "*.ts"
+  rules:
+    - set language = "typescript"
+    - set code_style = "clean"
+    - set comment_style = "inline-minimal"
+    - set default_creativity = 0.2
+```
+
+---
+
+## 🎨 Styling & Config Files
+```cursor
+- match: ["*.css", "*.scss", "*.json", "*.yml"]
+  rules:
+    # No unnecessary explanations for configuration or style files
+    - set explanation_preference = "none"
+    - set default_creativity = 0.1
+```
+
+---
+
+## 📝 Documentation & Commits
+```cursor
+- match: ["commit*", "CHANGELOG*", "README*", "*.md"]
+  rules:
+    # Allow slightly more creative phrasing for readability
+    - set style = "clear"
+    - set tone = "professional"
+    - set default_creativity = 0.3
+```
+
+---
+
+# ✅ Summary
+# - Default creativity = 0.2 across all models
+# - Clean and concise coding style
+# - Minimal explanations for faster coding flow
+# - Slightly higher creativity (0.3) for docs and commit messages
