@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Backend State Contract",
+  "type": "object",
+  "required": ["version", "states", "transitions"],
+  "properties": {
+    "version": { "type": "string" },
+    "states": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["current", "action", "allowed"],
+        "properties": {
+          "current": { "type": "string" },
+          "action": { "type": "string" },
+          "allowed": { "type": "boolean" },
+          "next": { "type": ["string", "null"] },
+          "idempotent": { "type": "boolean" },
+          "sideEffects": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

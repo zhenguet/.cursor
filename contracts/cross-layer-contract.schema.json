@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cross-layer-contract.schema.json",
+  "title": "Cross-Layer Contract",
+  "type": "object",
+  "required": ["version", "operation", "request", "response", "errors"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "operation": {
+      "type": "object",
+      "required": ["name", "kind"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["REST", "GraphQL", "event", "file", "other"] },
+        "method": { "type": ["string", "null"] },
+        "route": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "request": { "$ref": "#/$defs/message" },
+    "response": { "$ref": "#/$defs/message" },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "httpStatus": { "type": ["integer", "null"], "minimum": 100, "maximum": 599 },
+          "retryable": { "type": ["boolean", "null"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "boolean" },
+        "roles": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "stateTransition": {
+      "type": "object",
+      "properties": {
+        "current": { "type": ["string", "null"] },
+        "action": { "type": ["string", "null"] },
+        "next": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "asyncEffects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "timing"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "timing": { "enum": ["beforeCommit", "afterCommit", "async", "none"] },
+          "retryable": { "type": "boolean" },
+          "idempotent": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "$defs": {
+    "message": {
+      "type": "object",
+      "required": ["fields"],
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "nullable", "required"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "type": { "type": "string", "minLength": 1 },
+              "nullable": { "type": "boolean" },
+              "required": { "type": "boolean" },
+              "enum": { "type": "array", "items": { "type": "string" } }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

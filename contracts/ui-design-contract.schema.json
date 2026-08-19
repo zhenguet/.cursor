@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ui-design-contract.schema.json",
+  "title": "UI Design Contract",
+  "type": "object",
+  "required": ["version", "viewport", "elements", "layout"],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "viewport": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "order"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "order": { "type": "integer", "minimum": 0 },
+          "required": { "type": "boolean" },
+          "visible": { "type": "boolean" },
+          "parent": { "type": ["string", "null"] },
+          "row": { "type": "integer", "minimum": 0 },
+          "column": { "type": "integer", "minimum": 1 },
+          "columnSpan": { "type": "integer", "minimum": 1 },
+          "rowSpan": { "type": "integer", "minimum": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "layout": {
+      "type": "object",
+      "required": ["containers"],
+      "properties": {
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "display"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "display": { "enum": ["grid", "flex", "block", "absolute"] },
+              "columns": { "type": "array", "items": { "type": ["string", "number"] } },
+              "rows": { "type": "array", "items": { "type": ["string", "number"] } },
+              "sameRowGroups": {
+                "type": "array",
+                "items": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+              },
+              "expectedItemOrder": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

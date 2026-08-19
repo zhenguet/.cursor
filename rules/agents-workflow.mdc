@@ -1,0 +1,24 @@
+---
+description: Bootstrap agent workflow — read AGENTS.md and route prompts before any task
+alwaysApply: true
+---
+
+# Agent workflow bootstrap (required)
+
+At the **start of every session** and **before any task**, read `.cursor/AGENTS.md` in full with the Read tool. Treat it as the primary operating manual for this workspace. Do not skip it even if other rules or user rules are already loaded.
+
+After reading `.cursor/AGENTS.md`, follow its **PROMPT ROUTING** section: choose only the prompts listed in the matrix for the current task type. Do not read extra prompts.
+
+## Hard constraints (from AGENTS.md)
+
+- Do not guess. Do not over-engineer. Do not edit outside scope.
+- Chat with the user in **Vietnamese** unless they request another language.
+- Keep workspace prompts, rules, and skills in **English**.
+- Classify risk first (Trivial / Quick / Standard / High) and match workflow depth to risk.
+- **Plan-first gate:** for Standard and High work, present a plan and wait for user `OK` before writing code (see AGENTS.md for Quick/Trivial exemptions).
+- Use **code-review-graph MCP tools** before Grep/Glob/Read when exploring code (see root `AGENTS.md` / `.cursorrules`).
+- Load minimum context for the next decision; do not bulk-read skills or routing-chain files without a trigger.
+
+## If AGENTS.md was already read this session
+
+Re-read it when the task type changes (e.g. implement → review, FE → BE) or when prompt routing / risk requirements may differ.
