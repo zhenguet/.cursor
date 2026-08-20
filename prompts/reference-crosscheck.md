@@ -10,8 +10,6 @@ The goal is to collect enough evidence to make implementation decisions confiden
 
 Global risk, approval, graph, and scope policies are defined only in `@.cursor/AGENTS.md`.
 
----
-
 ## Evidence standard
 
 Collect enough evidence to answer:
@@ -27,8 +25,6 @@ A reference is useful **only** if it validates or changes an implementation deci
 There is **no fixed reference-count requirement**. Prefer the smallest sufficient evidence set. Add another reference only when the current evidence leaves a material decision unresolved, reveals broader impact, or requires an independent confirmation.
 
 Do not treat reference collection as completion. Do not implement Standard/High work until the reference map and defect-prevention gate are present in the approved plan, unless an explicit evidence-sufficient waiver is recorded.
-
----
 
 ## Discovery order
 
@@ -114,6 +110,7 @@ For every high-risk invariant, attempt at least one concrete counterexample **be
 Use realistic failure modes:
 
 - empty/null/boundary input
+- **near-valid input that a shallow validator/parser could incorrectly accept**
 - duplicate submission/message
 - concurrent actors
 - stale state or stale response
@@ -121,10 +118,30 @@ Use realistic failure modes:
 - permission mismatch
 - pagination/filter result shrink
 - malformed or unexpected payload
+- normalization/representation variants when the domain permits them (trimmed vs internal whitespace, Unicode/full-width forms, case folding, repeated delimiters, equivalent encodings)
 
 The plan must state the expected safe behavior for each counterexample.
 
-### 3. State transitions
+### 3. Validation/normalization rules
+
+When the task adds or changes a validator, parser, formatter, sanitizer, or normalizer, do not verify only obvious-valid and obvious-invalid examples.
+
+Explicitly check the nearest plausible false-positive boundary:
+
+```text
+Rule → obviously valid → obviously invalid → near-valid false-positive → expected rejection/normalization
+```
+
+Examples:
+
+- email: `user@example.com` vs `user name@example.com` vs `user@example com`
+- identifier: valid separator vs repeated/leading/trailing separator
+- numeric input: valid range vs just-outside-range value
+- normalized text: expected trimming vs internal whitespace that must remain invalid
+
+If the domain has an established parser/library or canonical validation rule, prefer it over inventing a shallow approximation.
+
+### 4. State transitions
 
 If the task changes status, lifecycle, approval, or other mutable state, define:
 
@@ -134,7 +151,7 @@ Current state + action → next state
 
 Also identify forbidden transitions and duplicate-execution behavior.
 
-### 4. Boundary matrix
+### 5. Boundary matrix
 
 For API, DB, queue, external service, cache, or file boundaries, record:
 
@@ -144,7 +161,7 @@ Boundary | Input | Output | Failure | Retry | Duplicate | Transaction timing
 
 Do not implement an external side effect until its transaction timing and failure behavior are understood.
 
-### 5. Data mutation impact
+### 6. Data mutation impact
 
 For write operations, explicitly identify:
 
@@ -155,7 +172,7 @@ For write operations, explicitly identify:
 - downstream events/notifications
 - authorization/ownership checks
 
-### 6. Verification mapping
+### 7. Verification mapping
 
 Map each important invariant/counterexample to verification:
 
@@ -168,8 +185,6 @@ A scenario with no verification path becomes an explicit residual risk, not an i
 ### Complexity rule
 
 Do not generate a giant analysis document. Use only the invariants and scenarios that can realistically fail in the touched flow.
-
----
 
 ## Output
 
@@ -223,8 +238,6 @@ Rules:
 
 For a new frontend page, continue with the new-page gate in `frontend-vercel-skills.md`.
 
----
-
 ## Done
 
 - [ ] Target repository resolved; context `CONTEXT.md` read when it exists.
@@ -233,6 +246,7 @@ For a new frontend page, continue with the new-page gate in `frontend-vercel-ski
 - [ ] Each cited reference informs a decision.
 - [ ] Implementation Risk Contract completed before coding.
 - [ ] High-risk invariants challenged with concrete counterexamples.
+- [ ] Validators/parsers/normalizers challenged against near-valid false positives and normalization boundaries when applicable.
 - [ ] State transitions defined when applicable.
 - [ ] Boundary and data-mutation impact checked when applicable.
 - [ ] Every important invariant/counterexample has a verification path or explicit residual risk.
