@@ -56,6 +56,20 @@ Cover only applicable, evidence-backed cases:
 - state transition
 - permission/contract boundary
 - multi-source absent / present-empty / present-value semantics when applicable
+- near-valid input that a shallow validator/parser could incorrectly accept
+- normalization boundaries such as trimming, internal whitespace, Unicode/full-width forms, case folding, repeated delimiters, or equivalent representations when applicable
+
+For validators, parsers, formatters, and normalizers, partition tests into at least these classes when the domain supports them:
+
+```text
+obviously valid
+obviously invalid
+near-valid / deceptively invalid
+boundary / empty
+normalization or representation variants
+```
+
+Do not assume a happy-path plus one obviously-invalid case proves a format rule.
 
 Rules:
 
@@ -102,6 +116,7 @@ For final reports, use the verification format in `AGENTS.md` and list remaining
 - [ ] Production path and peer tests inspected.
 - [ ] Repository test conventions followed.
 - [ ] Important applicable failure paths covered.
+- [ ] Validators/parsers/normalizers include near-valid and normalization boundary cases when applicable.
 - [ ] Assertions verify behavior rather than implementation details.
 - [ ] Tests are deterministic and isolated.
 - [ ] Tests executed or blocker + residual risk reported.
