@@ -65,9 +65,12 @@ Challenge only the failure modes applicable to the task:
 | Interaction | double action, stale response, cancellation, loading/disabled mismatch |
 | State | impossible combinations, stale derived state, lost selection |
 | Data flow | duplicate request, waterfall, stale cache, mutation/refetch inconsistency |
+| Input validation | empty/trimmed input, boundary values, near-valid malformed values, internal whitespace/separators, Unicode/full-width variants, case/normalization behavior, repeated delimiters, and values that pass a shallow parser but violate the intended format |
 | Navigation | back-navigation loss, invalid redirect, unsaved-state loss |
 | API boundary | request/response, nullability/enum, auth/permission mismatch |
 | UI contract | missing/extra element, order, grid/span/wrapping mismatch when design exists |
+
+For any new or changed validator/parser/normalizer, do not stop at obvious-invalid examples. Challenge at least one **near-valid** input that a shallow implementation could incorrectly accept, and one normalization/Unicode boundary when the domain permits them.
 
 Do not duplicate detailed validation rules here; consume the canonical validator/interaction/cross-layer capability.
 
@@ -100,6 +103,7 @@ Use upstream frontend/design skills for deeper performance or UX/a11y guidance w
 - [ ] Only triggered skills loaded.
 - [ ] Public/component/API contracts preserved or explicitly changed.
 - [ ] Applicable failure modes challenged before coding.
+- [ ] Changed validators/parsers/normalizers include near-valid and normalization boundary cases when applicable.
 - [ ] Important invariants/counterexamples mapped to verification or residual risk.
 - [ ] Cross-layer contract checked when FE/API/BE boundary exists.
 - [ ] Interaction contract checked for user-visible actions/async flows.
