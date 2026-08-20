@@ -17,8 +17,6 @@ Output order, finding bar, severity model, and invariant falsification live **on
 Do not start with broad summary before findings.
 If no findings, state that explicitly and include residual risk/test gaps.
 
----
-
 ## Finding bar
 
 A finding requires a concrete negative consequence (wrong behavior, regression, contract break, security/data risk, or maintainability failure with clear impact).
@@ -26,8 +24,6 @@ A finding requires a concrete negative consequence (wrong behavior, regression, 
 Do not produce a finding solely because a preferred pattern was not used.
 
 Style, preference, or alternative-architecture notes belong in residual observations only when they do not meet the finding bar.
-
----
 
 ## Severity model
 
@@ -42,8 +38,6 @@ Default scale:
 
 When `codex-connector-review.md` is active, use `P0`–`P3` mapped 1:1 to Critical–Low.
 
----
-
 ## Invariant falsification
 
 For every high-risk change or flow:
@@ -54,7 +48,30 @@ For every high-risk change or flow:
 
 A finding derived from this protocol must name the invariant and the counterexample.
 
----
+## Validation and parsing review
+
+Whenever a change adds or modifies a validator, parser, formatter, sanitizer, normalization rule, or user-input acceptance condition, review the **decision boundary**, not only the obvious happy path.
+
+At minimum, consider applicable partitions:
+
+```text
+obviously valid
+obviously invalid
+near-valid false positive
+empty / boundary
+normalization / representation variant
+```
+
+Explicitly try at least one value that a shallow implementation could incorrectly accept. Examples include:
+
+- internal whitespace in a token that allows only non-whitespace characters
+- repeated, leading, or trailing separators
+- just-inside vs just-outside numeric or length limits
+- Unicode/full-width characters in an ASCII-only field
+- case variants when comparison is normalized
+- visually similar but semantically different characters
+
+A validation change is not considered thoroughly reviewed merely because unit tests cover one valid value and one obviously invalid value.
 
 ## Evidence minimum
 
@@ -67,8 +84,6 @@ Each finding must include:
 
 If evidence is missing, mark the conclusion as unknown rather than asserting pass/fail.
 
----
-
 ## Verification minimum
 
 Match verification to the risk introduced (see `AGENTS.md` risk → verification table), not merely the files changed.
@@ -76,7 +91,7 @@ Match verification to the risk introduced (see `AGENTS.md` risk → verification
 - Report which checks were run (lint/type/test/build/runtime as applicable) and results.
 - If checks are skipped: state reason + residual risk.
 
----
+For validation/parser changes, include the relevant boundary/partition tests or state the missing coverage explicitly.
 
 ## Common review checklist
 
@@ -84,4 +99,5 @@ Match verification to the risk introduced (see `AGENTS.md` risk → verification
 - [ ] No style-only findings without concrete negative consequence
 - [ ] Unknowns/assumptions are explicitly listed
 - [ ] Verification evidence is included (or skip reasons + risk)
+- [ ] Validation/parser changes include near-valid and boundary analysis when applicable
 - [ ] Change summary is present and secondary
