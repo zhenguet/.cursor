@@ -56,10 +56,14 @@ Cover only applicable, evidence-backed cases:
 - state transition
 - permission/contract boundary
 - multi-source absent / present-empty / present-value semantics when applicable
+- **async secondary/derived state still pending when the user can trigger the action**
+- **primary data present but derived state incomplete, stale, cancelled, or replaced by a newer request**
 - near-valid input that a shallow validator/parser could incorrectly accept
 - normalization boundaries such as trimming, internal whitespace, Unicode/full-width forms, case folding, repeated delimiters, or equivalent representations when applicable
 
-For validators, parsers, formatters, and normalizers, partition tests into at least these classes when the domain supports them:
+For async or multi-source UI state, test the action boundary rather than only the eventual state update. The regression test must prove the user cannot submit an incomplete derived state, or that the action recomputes the authoritative value synchronously, according to the product contract.
+
+For validators, parsers, formatters, and normalizers, partition tests into these classes when the domain supports them:
 
 ```text
 obviously valid
@@ -70,6 +74,8 @@ normalization or representation variants
 ```
 
 Do not assume a happy-path plus one obviously-invalid case proves a format rule.
+
+Do not turn every concrete bug value into a permanent test catalog entry when the same regression is already represented by a reusable scenario class. Prefer one representative case per distinct failure class and keep feature-specific examples in the feature's own regression tests when needed.
 
 Rules:
 
@@ -90,6 +96,13 @@ Invariant / counterexample
 → test level
 → test case
 → expected observable result
+```
+
+For asynchronous derived state, include the timing sequence in the mapping:
+
+```text
+primary data loaded → secondary lookup pending → user action
+→ expected safe action behavior
 ```
 
 Do not manufacture tests for behavior that has no evidence or contract.
@@ -116,6 +129,7 @@ For final reports, use the verification format in `AGENTS.md` and list remaining
 - [ ] Production path and peer tests inspected.
 - [ ] Repository test conventions followed.
 - [ ] Important applicable failure paths covered.
+- [ ] Async derived-state/action-boundary races covered when applicable.
 - [ ] Validators/parsers/normalizers include near-valid and normalization boundary cases when applicable.
 - [ ] Assertions verify behavior rather than implementation details.
 - [ ] Tests are deterministic and isolated.
