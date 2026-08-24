@@ -114,6 +114,9 @@ Use realistic failure modes:
 - duplicate submission/message
 - concurrent actors
 - stale state or stale response
+- **async enrichment/secondary lookup still loading when the user can act**
+- **partial derived state: primary data is visible but required secondary data has not been merged yet**
+- **secondary lookup failure, cancellation, or replacement by a newer request**
 - timeout / partial dependency failure
 - permission mismatch
 - pagination/filter result shrink
@@ -121,6 +124,18 @@ Use realistic failure modes:
 - normalization/representation variants when the domain permits them (trimmed vs internal whitespace, Unicode/full-width forms, case folding, repeated delimiters, equivalent encodings)
 
 The plan must state the expected safe behavior for each counterexample.
+
+For async enrichment or multi-source UI state, explicitly define the action boundary:
+
+```text
+Primary data loaded
++ required secondary data pending
+→ action must not consume incomplete derived state
+```
+
+Choose one contract backed by the product behavior: disable/block the action, wait for the secondary data, or compute the authoritative value synchronously at action time. Do not leave the user-action path dependent on a fire-and-forget state update.
+
+Also verify that a stale value from a previous request cannot be mistaken for the current request's completed state.
 
 ### 3. Validation/normalization rules
 
@@ -132,14 +147,17 @@ Explicitly check the nearest plausible false-positive boundary:
 Rule → obviously valid → obviously invalid → near-valid false-positive → expected rejection/normalization
 ```
 
-Examples:
+Examples are classes, not a list of bugs to copy:
 
-- email: `user@example.com` vs `user name@example.com` vs `user@example com`
-- identifier: valid separator vs repeated/leading/trailing separator
-- numeric input: valid range vs just-outside-range value
-- normalized text: expected trimming vs internal whitespace that must remain invalid
+- email/token: internal whitespace or other characters outside the accepted grammar
+- identifier: repeated, leading, or trailing separators
+- numeric/length input: just-inside vs just-outside limits
+- normalized text: trimming vs characters that must remain invalid
+- representation: Unicode/full-width, case, or equivalent encoding variants
 
 If the domain has an established parser/library or canonical validation rule, prefer it over inventing a shallow approximation.
+
+Do not create a permanent prompt/reference entry for every newly discovered concrete value. Generalize the failure into a reusable rule or scenario class; add a concrete example only when it is necessary to explain an otherwise ambiguous contract.
 
 ### 4. State transitions
 
@@ -185,6 +203,8 @@ A scenario with no verification path becomes an explicit residual risk, not an i
 ### Complexity rule
 
 Do not generate a giant analysis document. Use only the invariants and scenarios that can realistically fail in the touched flow.
+
+Prefer **general failure classes over feature-specific examples**. When a bug reveals a missing rule, update the canonical prompt/skill that owns that rule. Do not accumulate a catalog of individual screens, field names, ticket numbers, or one-off values in general prompts.
 
 ## Output
 
@@ -246,6 +266,7 @@ For a new frontend page, continue with the new-page gate in `frontend-vercel-ski
 - [ ] Each cited reference informs a decision.
 - [ ] Implementation Risk Contract completed before coding.
 - [ ] High-risk invariants challenged with concrete counterexamples.
+- [ ] Async secondary/derived state is safe at every user-action boundary when applicable.
 - [ ] Validators/parsers/normalizers challenged against near-valid false positives and normalization boundaries when applicable.
 - [ ] State transitions defined when applicable.
 - [ ] Boundary and data-mutation impact checked when applicable.
@@ -254,3 +275,4 @@ For a new frontend page, continue with the new-page gate in `frontend-vercel-ski
 - [ ] Caller, consumer, test, or schema evidence included where it changes risk.
 - [ ] Legacy checked only for parity work.
 - [ ] Differences and unknowns recorded.
+- [ ] General rules updated instead of accumulating one-off bug examples when a reusable rule was missing.
