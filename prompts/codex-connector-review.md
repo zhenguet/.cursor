@@ -101,6 +101,8 @@ For each high-risk change, evaluate all applicable patterns:
    - no stale fallback restoring old state unexpectedly.
 3. **Async/race ordering**
    - stale response overwrite, double-submit, non-idempotent retries.
+   - **action-boundary race:** primary data is actionable while required secondary/derived state is still loading; verify the action cannot consume incomplete state.
+   - **request replacement:** an older lookup completing after a newer lookup must not overwrite the current authoritative state.
 4. **Post-mutation query consistency**
    - after a mutation removes rows from the active filtered/paginated set, the follow-up fetch must not reuse stale page/cursor/selection/aggregates.
    - counterexample to try: act on the entire last page (or the only matching rows) and check the refetched view is non-empty and selection is cleared.
@@ -178,6 +180,7 @@ Follow `@.cursor/prompts/review-output-baseline.md` for ordering, no-findings be
 - [ ] Evidence Gate completed or explicit Unknowns listed
 - [ ] Logic Validation Protocol completed for high-risk changes
 - [ ] Pattern Matrix evaluated for all high-risk changes
+- [ ] Async action-boundary and request-replacement races checked when applicable
 - [ ] Findings sorted by P0 -> P3
 - [ ] Every finding has repro + impact + fix direction + confidence
 - [ ] No style-only noise
