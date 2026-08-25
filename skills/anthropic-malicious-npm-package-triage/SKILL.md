@@ -9,7 +9,9 @@ description: >-
 domain: cybersecurity
 subdomain: supply-chain-security
 source: https://github.com/mukul975/Anthropic-Cybersecurity-Skills/tree/main/skills/detecting-malicious-npm-packages
+source-license: Apache-2.0
 license: Apache-2.0
+adaptation: Curated adaptation for this workspace; not an unmodified upstream copy.
 ---
 
 # Malicious npm Package Triage
