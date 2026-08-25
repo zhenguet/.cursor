@@ -8,7 +8,9 @@ description: >-
 domain: cybersecurity
 subdomain: devsecops
 source: https://github.com/mukul975/Anthropic-Cybersecurity-Skills/tree/main/skills/implementing-policy-as-code-with-open-policy-agent
+source-license: Apache-2.0
 license: Apache-2.0
+adaptation: Curated adaptation for this workspace; not an unmodified upstream copy.
 ---
 
 # Policy as Code with OPA
