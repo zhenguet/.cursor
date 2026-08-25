@@ -136,7 +136,7 @@ Routing rules:
 2. Security-sensitive work MUST additionally load `security-baseline.md` before implementation/review conclusions are finalized.
 3. Select the backend prompt by actual stack; do not mix Java and Node conventions.
 4. Select one primary workflow. Load a secondary prompt only when its trigger matches the actual change.
-5. Hard cap: at most **3 prompt/workflow files** besides this file for a normal task. Skills do not count toward this prompt cap, but only directly triggered skills may be loaded.
+5. A normal task has a hard cap of **3 prompt/workflow files** besides this file. An explicitly declared orchestrator exception may load its child workflows as **one workflow family**; the family must remain minimal and must not load unrelated prompts.
 6. `cross-repo-changes.md` and animation prompts are lightweight overlays and do not count toward the prompt cap.
 7. `project-init-split.md` is the primary orchestrator. It may load `project-init-contract.md` as a dependency and `project-init-fe.md` / `project-init-be.md` as child workflows only when those applications are actually being initialized in the current run.
 8. Review path selection: staged diff → `staged-review.md`; branch/PR review → `code-review`; spec audit → `frontend-spec-review-workflow.md`. Do not run multiple review paths unless requested.
@@ -150,12 +150,6 @@ Load only the skills directly triggered by the selected workflow.
 
 | Task signal | Skill |
 |---|---|
-| Security-sensitive implementation/review | `security-baseline` |
-| Security-sensitive API/configuration design | `trailofbits-sharp-edges` |
-| Confirmed vulnerability or reusable bad pattern; search for equivalent instances | `trailofbits-variant-analysis` |
-| CI/CD security gates, secrets/SAST/SCA/container/IaC/DAST | `anthropic-devsecops-security-scanning` |
-| Suspicious or newly vetted npm dependency | `anthropic-malicious-npm-package-triage` |
-| OPA/Gatekeeper policy enforcement | `anthropic-opa-policy-as-code` |
 | Frontend implementation/review | Select through `frontend-vercel-skills.md` |
 | Screenshot/Figma/mockup implementation | `ui-design-to-code` + `ui-design-validator` |
 | UI user action/mutation/async interaction | `ui-interaction-contract` |
@@ -170,6 +164,11 @@ Load only the skills directly triggered by the selected workflow.
 | Domain vocabulary/ADR | `domain-modeling` |
 | Plan interrogation | `grill-me`, `grill-with-docs`, or `grilling` |
 | UI/UX design generation | `ui-ux-pro-max` |
+| Security-sensitive API/configuration design | `trailofbits-sharp-edges` |
+| Confirmed security/logic defect with possible variants | `trailofbits-variant-analysis` |
+| CI/CD security scanning | `anthropic-devsecops-security-scanning` |
+| Malicious npm dependency investigation | `anthropic-malicious-npm-package-triage` |
+| OPA/Gatekeeper policy enforcement | `anthropic-opa-policy-as-code` |
 
 Read the selected `SKILL.md` before applying it. Do not copy upstream skill bodies into prompts.
 
@@ -183,9 +182,6 @@ AGENTS.md
 
 domain prompt
 = stack-specific conventions + task entry context
-
-security-baseline.md
-= shared application-security policy and verification baseline
 
 specialized skill
 = deep validation or domain capability
@@ -246,8 +242,8 @@ A task may escalate its read depth when evidence reveals broader impact. Escalat
 | Standard BE | AGENTS + one backend prompt + applicable validation skill(s) + direct target/peer/reference |
 | UI from design | AGENTS + `frontend.md` + `ui-design-to-code.md` + UI validator + only required FE/runtime skills |
 | FE ↔ BE mutation | AGENTS + domain prompt + `cross-layer-contract` + only the relevant UI/BE skill |
-| Project init FE-only | AGENTS + `project-init-fe.md` + contract prompt only if an API boundary is defined |
-| Project init BE-only | AGENTS + `project-init-be.md` + contract prompt only if an API boundary is defined |
+| Project init FE-only | AGENTS + `project-init-fe.md` + `security-baseline.md` only when security decisions are in scope |
+| Project init BE-only | AGENTS + `project-init-be.md` + `security-baseline.md` only when security decisions are in scope |
 | Split FE/BE init | AGENTS + `project-init-split.md` + only the child workflows actually initialized |
 | Review-only | AGENTS + one review workflow + only files needed to establish findings |
 
@@ -338,23 +334,35 @@ Do not prescribe a fixed failure-scenario count in the kernel. For Standard/High
 
 Use this decision order:
 
-1. **Required evidence missing** → stop and report `UNKNOWN`.
-2. **Required behavior/spec is contradictory** → stop and ask for clarification.
-3. **Implementation would expand scope** → stop and ask before widening it.
-4. **Required tool/capability unavailable** → use documented fallback; otherwise report `UNKNOWN`.
-5. **Security-sensitive action lacks an explicit security/control decision** → do not invent it; record `UNKNOWN` and stop when the decision is material.
-6. **Verification cannot establish required invariants** → report residual risk; do not claim PASS.
+1. **Do the required behavior and contract exist?**
+2. **Is the change within scope?**
+3. **Is required evidence sufficient for the risk level?**
+4. **Is a safe implementation path known?**
+5. **Are required approvals satisfied?**
+6. **Can the result be verified at the required depth?**
 
-Do not continue with speculative implementation after a material stop condition.
+If any answer is no, stop at the earliest applicable gate and report what is missing.
 
-## Definition of done
+## Verification
 
-Work is complete only when:
+Match verification depth to risk.
 
-- Scope is satisfied.
-- Required evidence is read.
-- No required invariant is `FAIL`.
-- Required verification passes, or explicit limitations are reported as `UNKNOWN`.
-- Final diff is limited to intended files/behavior.
-- Security-sensitive work has an explicit baseline result when applicable.
-- Git writes follow the explicit-current-turn rule.
+| Risk | Minimum verification |
+|---|---|
+| Trivial | Syntax/local check |
+| Quick | Targeted tests/checks |
+| Standard | Required tests + build/typecheck/lint as applicable + contract checks when relevant |
+| High | Standard checks + targeted runtime/data/integration evidence where relevant + explicit residual risk |
+
+Never convert skipped verification into `PASS`. Use `UNKNOWN` and state why.
+
+## Reporting
+
+Report:
+
+1. What changed or was found.
+2. Evidence and verification.
+3. Remaining blockers/unknowns.
+4. Residual risk.
+
+Keep user-facing output concise enough to act on, but complete enough to audit.
