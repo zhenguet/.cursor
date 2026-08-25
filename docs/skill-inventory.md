@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This file is the maintainability inventory for `.cursor/skills/` after upstream syncs.
+This file is the maintainability inventory for `.cursor/skills/` after upstream syncs and curated security-skill additions.
 
 It answers three questions:
 
@@ -57,6 +57,18 @@ This is **inventory/reference material**, not a second global policy source. `AG
 | `setup-pre-commit` | MANUAL | High | Explicit pre-commit/Husky setup |
 | `migrate-to-shoehorn` | MANUAL | Medium/High | Explicit migration task |
 
+### Security — curated upstream-derived skills
+
+These skills were selected from high-signal public security skill repositories and adapted into local Cursor-compatible skills. They are **conditional**, not globally loaded.
+
+| Skill | Status | Source | Trigger |
+|---|---|---|---|
+| `trailofbits-sharp-edges` | CONDITIONAL | Trail of Bits `sharp-edges` | Security-sensitive API/configuration design, dangerous defaults, fail-open behavior |
+| `trailofbits-variant-analysis` | CONDITIONAL | Trail of Bits `variant-analysis` | Confirmed vulnerability/logic bug; search for equivalent root-cause variants |
+| `anthropic-devsecops-security-scanning` | CONDITIONAL | Anthropic-Cybersecurity-Skills `implementing-devsecops-security-scanning` | CI/CD security gates, SAST/SCA/secrets/container/IaC/DAST |
+| `anthropic-malicious-npm-package-triage` | CONDITIONAL | Anthropic-Cybersecurity-Skills `detecting-malicious-npm-packages` | npm dependency vetting or suspected malicious package |
+| `anthropic-opa-policy-as-code` | CONDITIONAL | Anthropic-Cybersecurity-Skills `implementing-policy-as-code-with-open-policy-agent` | OPA/Gatekeeper policy enforcement for Kubernetes/IaC/CI/CD |
+
 ### Planning / product / repository operations — software-relevant but manual
 
 | Skill | Status | Software relevance | Use |
@@ -87,6 +99,7 @@ This is **inventory/reference material**, not a second global policy source. `AG
 |---|---|---|---|
 | `ask-matt` | NON-CORE | Low/Medium | External expert/persona consultation rather than engineering capability |
 | `caveman` | NON-CORE | Low | Output/token compression, not software engineering |
+| `claude-handoff` | NON-CORE | Medium | Claude-specific handoff |
 | `loop-me` | NON-CORE | Low/Medium | Generic process loop rather than software-specific capability |
 | `scaffold-exercises` | NON-CORE | Medium | Educational exercise/scaffolding rather than production engineering |
 | `teach` | NON-CORE | Medium | Teaching/learning workflow |
@@ -101,7 +114,7 @@ This is **inventory/reference material**, not a second global policy source. `AG
 
 ## Skills intentionally not used by normal FE/BE implementation
 
-These are **not missing** from the workspace. They are intentionally outside normal auto-routing because they are specialized or user-invoked:
+These are **not missing** from the workspace. They are intentionally outside normal auto-routing because they are specialized or user-invoked.
 
 ```text
 ask-matt
@@ -133,37 +146,40 @@ writing-guidelines
 writing-shape
 ```
 
-For software engineering, the most valuable currently-unrouted/manual capabilities are:
-
-1. `prototype` — useful before implementation when the state/UX question is unclear.
-2. `research` — useful for external APIs, framework behavior, and documentation gaps.
-3. `to-spec` / `to-tickets` — useful for turning conversation into durable implementation artifacts.
-4. `triage` — useful for issue/PR intake.
-5. `setup-ts-deep-modules` — useful for TypeScript architecture enforcement.
-6. `resolving-merge-conflicts` — useful for a concrete Git conflict, but its auto-commit behavior must stay subordinate to the kernel.
-7. `setup-pre-commit` — useful for repo quality gates, but its commit behavior is intentionally manual.
-8. `wayfinder` — useful for unusually large work that spans multiple sessions.
+Security skills are deliberately excluded from this manual-only list because they are now conditionally routed by `project-init-fe.md`, `project-init-be.md`, and `security-baseline.md`.
 
 ## Missing / stale routing discovered during sync review
 
 The previous `AGENTS.md` referenced skill names that no longer exist in the synced `skills/` tree:
 
 ```text
- design-an-interface
- to-prd
- to-issues
+design-an-interface
+to-prd
+to-issues
 ```
 
 Those references have been removed from canonical routing. Use the currently installed equivalents such as `codebase-design`, `to-spec`, and `to-tickets` when their task signals apply.
 
+## Upstream-derived skill policy
+
+Security skills imported from public repositories are **curated, not blindly copied**.
+
+- Preserve the upstream source URL and license information in the local skill frontmatter.
+- Keep workspace-specific routing in `prompts/` and `security-baseline.md`.
+- Do not make upstream-derived skills globally active merely because they exist.
+- Prefer general security capabilities over one-off exploit catalogs.
+- Review imported skills for unsafe commands, unsupported assumptions, and missing dependencies before routing them.
+- If a future upstream skill requires supporting files/scripts, import the complete required dependency set or create a deliberate local adaptation; do not leave broken references.
+
 ## Maintenance rule
 
-After every upstream skill sync:
+After every upstream skill sync or security-skill addition:
 
 1. Refresh this inventory from the current `skills/` tree.
 2. Check `AGENTS.md` and `prompts/` for broken skill references.
 3. Distinguish `ROUTED`, `CONDITIONAL`, `MANUAL`, `INDIRECT`, `NON-CORE`, and `GUARDED` rather than calling every unreferenced skill “unused”.
-4. Do not modify upstream skill contents to make routing pass.
-5. Resolve routing drift in `AGENTS.md` / `prompts/`, not inside third-party skills.
+4. Do not modify third-party skills merely to make routing pass.
+5. Resolve routing drift in `AGENTS.md` / `prompts/`, not inside upstream-derived skills.
+6. For local adaptations, preserve source attribution and document what was intentionally omitted or changed.
 
 This inventory is documentation, not an execution contract.
