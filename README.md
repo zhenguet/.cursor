@@ -35,6 +35,7 @@ You do **not** need to understand every file here to use it.
 | Java / Spring / GraphQL backend work | [`prompts/backend.md`](prompts/backend.md) |
 | Node / Express / Prisma backend work | [`prompts/backend-node.md`](prompts/backend-node.md) |
 | UI from Figma / screenshot | [`prompts/ui-design-to-code.md`](prompts/ui-design-to-code.md) |
+| Security baseline | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
 | How references and risks are checked before coding | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
 | How reviews are judged | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
 | How tests are planned | [`prompts/testing.md`](prompts/testing.md) |
@@ -99,11 +100,11 @@ The main rulebook. It decides risk, scope, routing, approval, verification, and 
 
 **`prompts/`**
 
-Short guides for a type of work, such as frontend, backend, testing, or project setup.
+Short guides for a type of work, such as frontend, backend, testing, security, or project setup.
 
 **`skills/`**
 
-Reusable capabilities. Many are copied or synced from public projects. They are normally loaded only when a task needs them.
+Reusable capabilities. Many are copied, adapted, or synced from public projects. They are normally loaded only when a task needs them.
 
 **`contracts/`**
 
@@ -131,6 +132,7 @@ For example:
 | Frontend rules | [`prompts/frontend.md`](prompts/frontend.md) |
 | Java / Spring rules | [`prompts/backend.md`](prompts/backend.md) |
 | Node / Prisma rules | [`prompts/backend-node.md`](prompts/backend-node.md) |
+| Shared security baseline | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
 | Pre-coding evidence and failure analysis | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
 | Review rules | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
 | Test design | [`prompts/testing.md`](prompts/testing.md) |
@@ -141,6 +143,11 @@ For example:
 | FE ↔ BE checking | [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md) |
 | Backend contract checking | [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md) |
 | Backend state checking | [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md) |
+| Security API/configuration design | [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md) |
+| Security variant hunting | [`skills/trailofbits-variant-analysis/SKILL.md`](skills/trailofbits-variant-analysis/SKILL.md) |
+| CI/CD security scanning | [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md) |
+| Malicious npm triage | [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md) |
+| Policy as code | [`skills/anthropic-opa-policy-as-code/SKILL.md`](skills/anthropic-opa-policy-as-code/SKILL.md) |
 | UI contract format | [`contracts/ui-design-contract.schema.json`](contracts/ui-design-contract.schema.json) |
 | FE ↔ BE contract format | [`contracts/cross-layer-contract.schema.json`](contracts/cross-layer-contract.schema.json) |
 | UI validator | [`scripts/ui/validate-design-contract.ps1`](scripts/ui/validate-design-contract.ps1) |
@@ -169,6 +176,8 @@ Common examples:
 - UI interaction rules → [`skills/ui-interaction-contract/SKILL.md`](skills/ui-interaction-contract/SKILL.md)
 - FE ↔ BE boundary → [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md)
 - Design structure validation → [`skills/ui-design-validator/SKILL.md`](skills/ui-design-validator/SKILL.md)
+- Security-sensitive frontend design → [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md)
+- npm dependency security → [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md)
 
 ### Java / Spring / GraphQL task
 
@@ -176,15 +185,45 @@ Start with [`prompts/backend.md`](prompts/backend.md).
 
 Load only the needed capabilities, such as [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md), [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md), or [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md).
 
+Security-sensitive backend design can additionally route to [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md), while CI/CD security work can route to [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md).
+
 ### Node / Express / Prisma task
 
 Start with [`prompts/backend-node.md`](prompts/backend-node.md).
 
-Use the same conditional validation capabilities when their triggers apply.
+Use the same conditional validation and security capabilities when their triggers apply. For npm supply-chain investigation, use [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md).
 
 ---
 
-## 6. UI from Figma or screenshot
+## 6. Security workflow
+
+Security is layered rather than copied into every project prompt:
+
+```text
+project-init-fe / project-init-be
+          ↓
+security-baseline.md
+          ↓
+specialized security skill when its trigger matches
+          ↓
+verification
+```
+
+The baseline covers authentication, authorization, resource isolation, input security, browser security, secrets, service boundaries, observability, and dependency risk.
+
+Specialized skills add deeper procedures:
+
+- **Trail of Bits sharp edges** — secure-by-default API/configuration design.
+- **Trail of Bits variant analysis** — search for other instances after a known defect.
+- **DevSecOps scanning** — CI/CD secrets, SAST, SCA, container/IaC, and DAST gates.
+- **Malicious npm triage** — defensive investigation of suspicious npm packages.
+- **OPA policy as code** — executable security policy for Kubernetes/IaC/CI/CD.
+
+These skills are **conditional**. Do not load the entire security collection for an ordinary change.
+
+---
+
+## 7. UI from Figma or screenshot
 
 For UI reproduction, the main path is:
 
@@ -222,7 +261,7 @@ More examples are kept in [`docs/ui-design-validation-examples.md`](docs/ui-desi
 
 ---
 
-## 7. Prevent problems before coding
+## 8. Prevent problems before coding
 
 For larger or riskier work, the agent should challenge the design before writing code:
 
@@ -257,7 +296,7 @@ The detailed pre-coding workflow is [`prompts/reference-crosscheck.md`](prompts/
 
 ---
 
-## 8. Contracts and automatic checks
+## 9. Contracts and automatic checks
 
 A contract answers:
 
@@ -293,7 +332,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/scripts/prompt/validate-workspa
 
 ---
 
-## 9. Project setup
+## 10. Project setup
 
 Use the smallest setup guide that matches the job:
 
@@ -307,7 +346,7 @@ Use the smallest setup guide that matches the job:
 
 ---
 
-## 10. Reviews and tests
+## 11. Reviews and tests
 
 ### Review
 
@@ -315,6 +354,8 @@ Use the smallest setup guide that matches the job:
 - Frontend specification review → [`prompts/frontend-spec-review-workflow.md`](prompts/frontend-spec-review-workflow.md)
 - High-intensity review → [`prompts/codex-connector-review.md`](prompts/codex-connector-review.md)
 - Common review rules → [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md)
+
+For a confirmed security defect, `trailofbits-variant-analysis` can be loaded to search for the same root cause elsewhere instead of adding a one-off example to a global prompt.
 
 ### Testing
 
@@ -324,7 +365,7 @@ For TDD or test-first work, load [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) wh
 
 ---
 
-## 11. Skill inventory
+## 12. Skill inventory
 
 The `skills/` folder is intentionally large. Not every skill should be loaded for every task.
 
@@ -341,15 +382,17 @@ A skill can be useful even when it is not part of the default workflow.
 
 ---
 
-## 12. Upstream skills
+## 13. Upstream and curated skills
 
-Many skills are synced from public projects.
+Many skills are synced or adapted from public projects.
 
 The rule is simple:
 
 **do not edit an upstream skill just to fit this workspace.**
 
-Instead, put workspace-specific behavior in:
+For curated security skills, the local file is an explicit adaptation. It keeps source attribution and is intentionally routed only when the task signal matches.
+
+Workspace-specific behavior belongs in:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`prompts/`](prompts/)
@@ -359,13 +402,13 @@ Instead, put workspace-specific behavior in:
 
 If an upstream skill asks for something that conflicts with the workspace rules, the workspace rules win.
 
-For current source information, see [`docs/skill-inventory.md`](docs/skill-inventory.md).
+For current source information and routing, see [`docs/skill-inventory.md`](docs/skill-inventory.md).
 
 ---
 
-## 13. After syncing skills
+## 14. After syncing skills
 
-When the `skills/` folder is updated from upstream:
+When the `skills/` folder is updated from upstream or a curated security skill is added:
 
 ```text
 1. Refresh [skill inventory](docs/skill-inventory.md)
@@ -373,14 +416,15 @@ When the `skills/` folder is updated from upstream:
 3. Check prompt → skill links
 4. Find new software-related skills that are not reachable
 5. Remove old skill names
-6. Run [workspace self-check](scripts/prompt/validate-workspace.ps1)
+6. Verify imported/curated skill dependencies are complete
+7. Run [workspace self-check](scripts/prompt/validate-workspace.ps1)
 ```
 
 Do not add a skill to the normal context just because it exists.
 
 ---
 
-## 14. Language versions
+## 15. Language versions
 
 - **English:** this file, [`README.md`](README.md)
 - **Vietnamese:** [`README.vi.md`](README.vi.md)
