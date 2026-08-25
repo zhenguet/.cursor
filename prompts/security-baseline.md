@@ -4,7 +4,7 @@
 
 Provide the shared security baseline for new FE/BE projects and security-sensitive changes.
 
-This is a reusable baseline, not a replacement for framework-specific security guidance, repository policy, or the application's explicit requirements.
+This is a reusable baseline, not a replacement for framework-specific security guidance, repository policy, specialized security skills, or the application's explicit requirements.
 
 ## Core principles
 
@@ -154,6 +154,22 @@ For new projects:
 - do not copy third-party code without checking its license and provenance
 - record security-relevant dependency limitations as `UNKNOWN` when they cannot be verified
 
+When a dependency is suspected of malicious behavior, use `anthropic-malicious-npm-package-triage` for npm-specific defensive triage rather than executing the package on a developer workstation.
+
+## Specialized security skills
+
+Load these only when their trigger matches the task:
+
+| Skill | Trigger |
+|---|---|
+| `trailofbits-sharp-edges` | Security-sensitive API/configuration design, dangerous defaults, fail-open behavior, or misuse-resistant interfaces |
+| `trailofbits-variant-analysis` | A concrete vulnerability/logic bug is confirmed and equivalent instances must be found |
+| `anthropic-devsecops-security-scanning` | CI/CD security gates, secrets/SAST/SCA/container/IaC/DAST setup |
+| `anthropic-malicious-npm-package-triage` | npm dependency vetting or suspected malicious package |
+| `anthropic-opa-policy-as-code` | OPA/Gatekeeper policy enforcement for Kubernetes/IaC/CI/CD |
+
+Specialized skills provide deeper task-specific procedures. They MUST remain subordinate to this baseline, `.cursor/AGENTS.md`, and explicit product/security requirements.
+
 ## Security verification
 
 Before initialization or a security-sensitive implementation is considered complete, verify the applicable items:
@@ -188,5 +204,6 @@ Secrets/data security: PASS/FAIL/UNKNOWN/N/A
 API/service boundaries: PASS/FAIL/UNKNOWN/N/A
 Observability: PASS/FAIL/UNKNOWN/N/A
 Dependencies/supply chain: PASS/FAIL/UNKNOWN/N/A
+Specialized security skills: ...
 Residual risks / unknowns: ...
 ```
