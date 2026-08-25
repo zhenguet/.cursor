@@ -2,431 +2,159 @@
 
 > **Language / Ngôn ngữ:** [English](README.md) · [Tiếng Việt](README.vi.md)
 
-A small, reusable instruction system for AI coding agents.
+A reusable operating system for AI coding agents.
 
-The main idea is simple:
-
-**read only what is needed → understand what must stay true → make the smallest safe change → check the result → report clearly.**
-
-This repository is designed to work as a **general-purpose library**, not as documentation for one specific application or team.
-
----
-
-## 1. What is this?
-
-When an AI agent changes software, it can make a change that looks correct but is logically wrong.
-
-This workspace gives the agent a simple structure for deciding:
-
-- what to read
-- what not to read
-- what kind of task it is
-- what can go wrong
-- what must be checked before calling the work complete
-
-You do **not** need to understand every file here to use it.
-
-### Start here
-
-| Purpose | File |
-|---|---|
-| Rules for the whole workspace | [`AGENTS.md`](AGENTS.md) |
-| Frontend work | [`prompts/frontend.md`](prompts/frontend.md) |
-| Java / Spring / GraphQL backend work | [`prompts/backend.md`](prompts/backend.md) |
-| Node / Express / Prisma backend work | [`prompts/backend-node.md`](prompts/backend-node.md) |
-| UI from Figma / screenshot | [`prompts/ui-design-to-code.md`](prompts/ui-design-to-code.md) |
-| Security baseline | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
-| How references and risks are checked before coding | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
-| How reviews are judged | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
-| How tests are planned | [`prompts/testing.md`](prompts/testing.md) |
-| How refactoring is handled | [`prompts/refactor.md`](prompts/refactor.md) |
-| How projects are initialized | [`prompts/project-init.md`](prompts/project-init.md) |
-| Skill inventory | [`docs/skill-inventory.md`](docs/skill-inventory.md) |
-| UI validation examples | [`docs/ui-design-validation-examples.md`](docs/ui-design-validation-examples.md) |
-| Workspace self-check | [`scripts/prompt/validate-workspace.ps1`](scripts/prompt/validate-workspace.ps1) |
-
----
-
-## 2. The simple workflow
-
-Every task follows roughly this path:
+The design principle is:
 
 ```text
-User request
-   ↓
-[AGENTS.md](AGENTS.md)
-   ↓
-Choose the smallest suitable workflow
-   ↓
-Read only the skills and references that are actually needed
-   ↓
-Check important rules / contracts / risks
-   ↓
-Make the change
-   ↓
-Run the right checks
-   ↓
-PASS / FAIL / UNKNOWN
+Read only what is needed
+→ identify what must stay true
+→ make the smallest safe change
+→ verify at the right depth
+→ report evidence and residual risk
 ```
 
-The important idea is **not to read everything**.
+This repository is intentionally general-purpose. Application-specific rules belong in the target application's repository.
 
-A small change should stay small.
-A difficult change should get deeper checking.
+## Start here
 
----
-
-## 3. How the folders are organized
-
-```text
-.cursor/
-├── README.md                 # This guide, in English
-├── README.vi.md              # Vietnamese version
-├── AGENTS.md                 # Global agent rules
-├── rules/                    # Runtime startup rules
-├── prompts/                  # Task-specific instructions
-├── skills/                   # Reusable capabilities
-├── contracts/                # Machine-readable expectations
-├── scripts/                  # Automatic checks / validators
-├── docs/                     # Examples and maintenance notes
-└── mcp.json                  # Optional MCP tool configuration
-```
-
-### What each folder means
-
-**`AGENTS.md`**
-
-The main rulebook. It decides risk, scope, routing, approval, verification, and safety.
-
-**`prompts/`**
-
-Short guides for a type of work, such as frontend, backend, testing, security, or project setup.
-
-**`skills/`**
-
-Reusable capabilities. Many are copied, adapted, or synced from public projects. They are normally loaded only when a task needs them.
-
-**`contracts/`**
-
-A machine-readable description of what must be true. This helps turn vague requirements into checks.
-
-**`scripts/`**
-
-Programs that check whether an expected rule is actually satisfied.
-
-**`docs/`**
-
-Examples, inventories, and explanations. These are reference material, not the source of global rules.
-
----
-
-## 4. The most important rule: one owner for each rule
-
-A rule should have **one main home**.
-
-For example:
-
-| Topic | Main owner |
+| Purpose | Canonical owner |
 |---|---|
-| Global risk / scope / safety | [`AGENTS.md`](AGENTS.md) |
-| Frontend rules | [`prompts/frontend.md`](prompts/frontend.md) |
-| Java / Spring rules | [`prompts/backend.md`](prompts/backend.md) |
-| Node / Prisma rules | [`prompts/backend-node.md`](prompts/backend-node.md) |
+| Global risk, routing, approval, context, verification | [`AGENTS.md`](AGENTS.md) |
+| Frontend | [`prompts/frontend.md`](prompts/frontend.md) |
+| Java / Spring / GraphQL backend | [`prompts/backend.md`](prompts/backend.md) |
+| Node / Express / Prisma backend | [`prompts/backend-node.md`](prompts/backend-node.md) |
 | Shared security baseline | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
+| Project initialization | [`prompts/project-init.md`](prompts/project-init.md) |
+| FE initialization | [`prompts/project-init-fe.md`](prompts/project-init-fe.md) |
+| BE initialization | [`prompts/project-init-be.md`](prompts/project-init-be.md) |
+| Split FE/BE initialization | [`prompts/project-init-split.md`](prompts/project-init-split.md) |
+| FE↔BE contract | [`prompts/project-init-contract.md`](prompts/project-init-contract.md) |
 | Pre-coding evidence and failure analysis | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
-| Review rules | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
-| Test design | [`prompts/testing.md`](prompts/testing.md) |
+| Review baseline | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
+| Testing | [`prompts/testing.md`](prompts/testing.md) |
 | Refactoring | [`prompts/refactor.md`](prompts/refactor.md) |
-| UI design implementation flow | [`prompts/ui-design-to-code.md`](prompts/ui-design-to-code.md) |
-| UI structure checking | [`skills/ui-design-validator/SKILL.md`](skills/ui-design-validator/SKILL.md) |
-| UI interaction checking | [`skills/ui-interaction-contract/SKILL.md`](skills/ui-interaction-contract/SKILL.md) |
-| FE ↔ BE checking | [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md) |
-| Backend contract checking | [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md) |
-| Backend state checking | [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md) |
-| Security API/configuration design | [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md) |
-| Security variant hunting | [`skills/trailofbits-variant-analysis/SKILL.md`](skills/trailofbits-variant-analysis/SKILL.md) |
-| CI/CD security scanning | [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md) |
-| Malicious npm triage | [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md) |
-| Policy as code | [`skills/anthropic-opa-policy-as-code/SKILL.md`](skills/anthropic-opa-policy-as-code/SKILL.md) |
-| UI contract format | [`contracts/ui-design-contract.schema.json`](contracts/ui-design-contract.schema.json) |
-| FE ↔ BE contract format | [`contracts/cross-layer-contract.schema.json`](contracts/cross-layer-contract.schema.json) |
-| UI validator | [`scripts/ui/validate-design-contract.ps1`](scripts/ui/validate-design-contract.ps1) |
-| FE ↔ BE validator | [`scripts/cross-layer/validate-contract.ps1`](scripts/cross-layer/validate-contract.ps1) |
-| Backend state validator | [`scripts/backend/validate-state-contract.ps1`](scripts/backend/validate-state-contract.ps1) |
-| Prompt workspace validator | [`scripts/prompt/validate-workspace.ps1`](scripts/prompt/validate-workspace.ps1) |
+| Frontend skill router | [`prompts/frontend-vercel-skills.md`](prompts/frontend-vercel-skills.md) |
+| Skill inventory | [`docs/skill-inventory.md`](docs/skill-inventory.md) |
+| Security provenance | [`docs/security-skill-provenance.md`](docs/security-skill-provenance.md) |
+| Workspace validator | [`scripts/prompt/validate-workspace.ps1`](scripts/prompt/validate-workspace.ps1) |
 
-Other files should **point to the owner**, not copy the same detailed rules again.
-
-This keeps the system easier to understand and cheaper in context.
-
----
-
-## 5. Frontend and backend
-
-### Frontend task
-
-Start with [`prompts/frontend.md`](prompts/frontend.md).
-
-Load additional frontend capabilities only when needed. The frontend skill router is [`prompts/frontend-vercel-skills.md`](prompts/frontend-vercel-skills.md).
-
-Common examples:
-
-- React / Next.js implementation → [`skills/vercel-react-best-practices/SKILL.md`](skills/vercel-react-best-practices/SKILL.md)
-- Shared component patterns → [`skills/vercel-composition-patterns/SKILL.md`](skills/vercel-composition-patterns/SKILL.md)
-- UI interaction rules → [`skills/ui-interaction-contract/SKILL.md`](skills/ui-interaction-contract/SKILL.md)
-- FE ↔ BE boundary → [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md)
-- Design structure validation → [`skills/ui-design-validator/SKILL.md`](skills/ui-design-validator/SKILL.md)
-- Security-sensitive frontend design → [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md)
-- npm dependency security → [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md)
-
-### Java / Spring / GraphQL task
-
-Start with [`prompts/backend.md`](prompts/backend.md).
-
-Load only the needed capabilities, such as [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md), [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md), or [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md).
-
-Security-sensitive backend design can additionally route to [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md), while CI/CD security work can route to [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md).
-
-### Node / Express / Prisma task
-
-Start with [`prompts/backend-node.md`](prompts/backend-node.md).
-
-Use the same conditional validation and security capabilities when their triggers apply. For npm supply-chain investigation, use [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md).
-
----
-
-## 6. Security workflow
-
-Security is layered rather than copied into every project prompt:
+## Architecture
 
 ```text
-project-init-fe / project-init-be
-          ↓
+AGENTS.md
+   ↓
+primary domain prompt
+   ↓
+canonical policy / contract
+   ↓
+conditional specialized skill
+   ↓
+validator / tests / runtime evidence
+```
+
+One rule has one owner. Other files reference the owner instead of copying the policy.
+
+### Ownership model
+
+- `AGENTS.md` — global risk, scope, approval, routing, context, Git/data safety, verification.
+- `prompts/` — task and stack orchestration.
+- `security-baseline.md` — shared security policy and invariants.
+- `contracts/` — machine-readable expected behavior.
+- `skills/` — reusable specialized capabilities; upstream content is treated as external dependency, and curated security skills preserve provenance.
+- `scripts/` — executable validation.
+- `docs/` — inventory, provenance, examples, maintenance notes.
+
+## Security workflow
+
+Security is progressive-disclosure, not a giant default checklist:
+
+```text
+Security-sensitive task
+        ↓
 security-baseline.md
-          ↓
-specialized security skill when its trigger matches
-          ↓
-verification
+        ↓
+specialized skill when triggered
+        ↓
+security verification
 ```
 
-The baseline covers authentication, authorization, resource isolation, input security, browser security, secrets, service boundaries, observability, and dependency risk.
+The baseline covers authentication, authorization, resource/tenant isolation, input/application security, browser security, secrets, service boundaries, observability, and dependency risk.
 
-Specialized skills add deeper procedures:
+Curated specialized skills include:
 
-- **Trail of Bits sharp edges** — secure-by-default API/configuration design.
-- **Trail of Bits variant analysis** — search for other instances after a known defect.
-- **DevSecOps scanning** — CI/CD secrets, SAST, SCA, container/IaC, and DAST gates.
-- **Malicious npm triage** — defensive investigation of suspicious npm packages.
-- **OPA policy as code** — executable security policy for Kubernetes/IaC/CI/CD.
+- Trail of Bits sharp-edges
+- Trail of Bits variant-analysis
+- DevSecOps security scanning
+- Malicious npm package triage
+- OPA/Gatekeeper policy-as-code
 
-These skills are **conditional**. Do not load the entire security collection for an ordinary change.
+They are conditional and must not be loaded merely because they exist.
 
----
+## FE / BE initialization
 
-## 7. UI from Figma or screenshot
+`project-init-fe.md` and `project-init-be.md` are deliberately thin orchestration layers. They resolve only stack-specific setup and delegate shared security and contract policy to their canonical owners.
 
-For UI reproduction, the main path is:
+For split applications:
 
 ```text
-Design reference
-   ↓
-[prompts/ui-design-to-code.md](prompts/ui-design-to-code.md)
-   ↓
-[prompts/frontend.md](prompts/frontend.md)
-   ↓
-Design Contract
-   ↓
-Implementation
-   ↓
-[skills/ui-design-validator/SKILL.md](skills/ui-design-validator/SKILL.md)
-   ↓
-Interaction / API checks when needed
-   ↓
-Runtime / visual verification
+project-init-split
+   ├── project-init-fe
+   ├── project-init-be
+   └── project-init-contract (only when concrete API semantics are in scope)
 ```
 
-A UI is not considered correct just because it **looks close**.
+The split orchestrator is one workflow family, so the normal prompt cap does not incorrectly reject its declared children.
 
-If the design says:
+## Contracts and validators
 
-```text
-Expected: 1 1 2 1 1 2
-Observed: 1 1 2 1 / 1 2
-Result: FAIL
-```
+The repository includes contracts for:
 
-the implementation is wrong when the intended row structure is one row.
+- UI design
+- FE↔BE boundaries
+- backend state transitions
 
-More examples are kept in [`docs/ui-design-validation-examples.md`](docs/ui-design-validation-examples.md).
+Schemas use explicit core fields and a deliberate `metadata` extension point rather than accepting arbitrary unknown properties everywhere.
 
----
-
-## 8. Prevent problems before coding
-
-For larger or riskier work, the agent should challenge the design before writing code:
-
-```text
-Requirement
-   ↓
-What must always stay true?
-   ↓
-How could this fail?
-   ↓
-What is the smallest test or check that proves it?
-   ↓
-Implement
-   ↓
-Verify
-```
-
-Typical examples:
-
-- two clicks create two requests
-- two users change the same record at the same time
-- an old API response overwrites a new one
-- deleting the last row leaves an empty page
-- the UI and API disagree about a field or enum
-- a retry sends the same external action twice
-- a required field disappears from the UI
-- a grid item wraps to the wrong row
-
-The agent should check only the risks that can actually happen in the task. It should not create a giant checklist for every small change.
-
-The detailed pre-coding workflow is [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md).
-
----
-
-## 9. Contracts and automatic checks
-
-A contract answers:
-
-> **What should be true?**
-
-A validator answers:
-
-> **Does the actual result match that expectation?**
-
-### UI
-
-- Contract: [`contracts/ui-design-contract.schema.json`](contracts/ui-design-contract.schema.json)
-- Validator: [`scripts/ui/validate-design-contract.ps1`](scripts/ui/validate-design-contract.ps1)
-
-### FE ↔ BE
-
-- Contract: [`contracts/cross-layer-contract.schema.json`](contracts/cross-layer-contract.schema.json)
-- Validator: [`scripts/cross-layer/validate-contract.ps1`](scripts/cross-layer/validate-contract.ps1)
-
-### Backend state
-
-- Validator: [`scripts/backend/validate-state-contract.ps1`](scripts/backend/validate-state-contract.ps1)
-
-### Workspace health
-
-- Validator: [`scripts/prompt/validate-workspace.ps1`](scripts/prompt/validate-workspace.ps1)
-
-Run the workspace check after changing prompts, routing, contracts, or validators:
+Run the workspace validator locally:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .cursor/scripts/prompt/validate-workspace.ps1
 ```
 
----
+CI runs the same workspace validator and parses every JSON contract on every push and pull request.
 
-## 10. Project setup
+## MCP configuration
 
-Use the smallest setup guide that matches the job:
+This repository does **not** contain workspace-specific database credentials or internal MCP configuration.
 
-| Job | Guide |
-|---|---|
-| General project setup | [`prompts/project-init.md`](prompts/project-init.md) |
-| Frontend setup | [`prompts/project-init-fe.md`](prompts/project-init-fe.md) |
-| Backend setup | [`prompts/project-init-be.md`](prompts/project-init-be.md) |
-| Split frontend + backend | [`prompts/project-init-split.md`](prompts/project-init-split.md) |
-| API contract only | [`prompts/project-init-contract.md`](prompts/project-init-contract.md) |
+Use [`mcp.example.json`](mcp.example.json) as the portable baseline and provide local/private MCP configuration through the user's actual Cursor environment.
 
----
+Never commit production database URIs, internal project paths, or read/write credentials into this general-purpose repository.
 
-## 11. Reviews and tests
+## Skill inventory
 
-### Review
+See [`docs/skill-inventory.md`](docs/skill-inventory.md) for `ROUTED`, `CONDITIONAL`, `MANUAL`, `INDIRECT`, `GUARDED`, and `NON-CORE` skills.
 
-- Normal staged review → [`prompts/staged-review.md`](prompts/staged-review.md)
-- Frontend specification review → [`prompts/frontend-spec-review-workflow.md`](prompts/frontend-spec-review-workflow.md)
-- High-intensity review → [`prompts/codex-connector-review.md`](prompts/codex-connector-review.md)
-- Common review rules → [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md)
+Do not treat an unreferenced skill as broken simply because it is not part of the default workflow.
 
-For a confirmed security defect, `trailofbits-variant-analysis` can be loaded to search for the same root cause elsewhere instead of adding a one-off example to a global prompt.
+## Maintenance
 
-### Testing
-
-Use [`prompts/testing.md`](prompts/testing.md).
-
-For TDD or test-first work, load [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) when its trigger applies.
-
----
-
-## 12. Skill inventory
-
-The `skills/` folder is intentionally large. Not every skill should be loaded for every task.
-
-Use [`docs/skill-inventory.md`](docs/skill-inventory.md) to see:
-
-- `ROUTED` skills: directly connected to normal workflows
-- `CONDITIONAL` skills: loaded only for matching tasks
-- `MANUAL` skills: user- or situation-driven
-- `INDIRECT` skills: reached through another workflow
-- `GUARDED` skills: useful but must not override workspace safety rules
-- `NON-CORE` skills: not central to normal software development
-
-A skill can be useful even when it is not part of the default workflow.
-
----
-
-## 13. Upstream and curated skills
-
-Many skills are synced or adapted from public projects.
-
-The rule is simple:
-
-**do not edit an upstream skill just to fit this workspace.**
-
-For curated security skills, the local file is an explicit adaptation. It keeps source attribution and is intentionally routed only when the task signal matches.
-
-Workspace-specific behavior belongs in:
-
-- [`AGENTS.md`](AGENTS.md)
-- [`prompts/`](prompts/)
-- local skills in [`skills/`](skills/)
-- [`contracts/`](contracts/)
-- [`scripts/`](scripts/)
-
-If an upstream skill asks for something that conflicts with the workspace rules, the workspace rules win.
-
-For current source information and routing, see [`docs/skill-inventory.md`](docs/skill-inventory.md).
-
----
-
-## 14. After syncing skills
-
-When the `skills/` folder is updated from upstream or a curated security skill is added:
+After changing prompts, rules, contracts, routing, or skill provenance:
 
 ```text
-1. Refresh [skill inventory](docs/skill-inventory.md)
-2. Check [AGENTS.md](AGENTS.md) routes
-3. Check prompt → skill links
-4. Find new software-related skills that are not reachable
-5. Remove old skill names
-6. Verify imported/curated skill dependencies are complete
-7. Run [workspace self-check](scripts/prompt/validate-workspace.ps1)
+1. Check canonical ownership
+2. Check prompt/skill references
+3. Check contract schemas
+4. Run validate-workspace.ps1
+5. Let CI enforce the same checks
 ```
 
-Do not add a skill to the normal context just because it exists.
+When a new bug exposes a reusable failure pattern, update the canonical rule owner or verification method. Do not build a permanent catalog of one-off bug examples into general prompts.
 
----
+## Language versions
 
-## 15. Language versions
+- English: [`README.md`](README.md)
+- Vietnamese: [`README.vi.md`](README.vi.md)
 
-- **English:** this file, [`README.md`](README.md)
-- **Vietnamese:** [`README.vi.md`](README.vi.md)
-
-The two files should describe the same system. When the architecture changes, update both.
+Keep both descriptions semantically aligned when the architecture changes.
