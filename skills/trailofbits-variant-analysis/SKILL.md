@@ -6,7 +6,7 @@ description: >-
   Use after a concrete defect is found to prevent the same root cause from
   remaining elsewhere. Adapted from Trail of Bits variant-analysis.
 source: https://github.com/trailofbits/skills/tree/main/plugins/variant-analysis
-source-license: Apache-2.0
+source-license: CC-BY-SA-4.0
 ---
 
 # Variant Analysis
