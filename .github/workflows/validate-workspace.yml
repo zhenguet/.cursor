@@ -1,0 +1,28 @@
+name: Validate Workspace
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON contracts
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path contracts -Filter '*.json' -File | ForEach-Object {
+            Get-Content -Raw $_.FullName | ConvertFrom-Json | Out-Null
+            Write-Host "Valid JSON: $($_.FullName)"
+          }
+
+      - name: Validate workspace
+        shell: pwsh
+        run: ./scripts/prompt/validate-workspace.ps1
