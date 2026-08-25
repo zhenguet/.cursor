@@ -1,7 +1,7 @@
-# Animation — Checklist thực thi
+# Animation — Implementation Checklist
 
-> Dùng để tra cứu nhanh khi code hoặc review PR có animation.
-> Với phần triết lý/nguyên tắc thiết kế, xem `animation-principles.md`.
+> Use this for quick reference when implementing or reviewing PRs involving animation.
+> For design philosophy and principles, see `animation-principles.md`.
 
 ## Conditional dependencies
 
@@ -9,125 +9,99 @@
 
 Do not load the view-transition skill for ordinary component micro-interactions.
 
-## Trước khi viết code
+## Before coding
 
-1. Kiểm tra implementation hiện tại trong component/module liên quan.
-2. Tìm các animation tương tự đã tồn tại trong repo (vd. `animations/`, hook
-   dùng chung, component tương tự khác) trước khi thiết kế cái mới. Ưu tiên
-   reuse pattern hiện có nếu nó giải quyết được cùng vấn đề — không tạo
-   animation utility mới chỉ vì task nghe như "mới".
-3. Xác định trigger, choreography, timing, easing.
-4. Xác định responsive behavior và reduced-motion behavior.
-5. Xác định yêu cầu cleanup (unmount, route change, viewport change).
+1. Inspect the current implementation in the relevant component/module.
+2. Find existing similar animations in the repository (for example, `animations/`, shared hooks, or comparable components) before designing a new one. Prefer an existing pattern when it solves the same problem; do not create a new animation utility merely because the task sounds new.
+3. Identify the trigger, choreography, timing, and easing.
+4. Identify responsive behavior and reduced-motion behavior.
+5. Identify cleanup requirements (unmount, route change, viewport change).
 
-Sau đó triển khai kiến trúc **nhỏ nhất có thể** để tạo ra animation mong muốn.
-Không tạo abstraction không cần thiết, không sửa code không liên quan, không
-thêm dependency nếu không có lý do chính đáng.
+Then implement the **smallest possible** architecture that produces the desired animation.
+Do not create unnecessary abstractions, modify unrelated code, or add dependencies without a valid reason.
 
 ## Performance
 
-- Ưu tiên animate `transform` và `opacity`.
-- Tránh: recalculation layout không cần thiết, DOM measurement loop,
-  đọc/ghi DOM đồng bộ lặp lại, animate quá nhiều DOM node, cập nhật React
-  state theo từng animation frame.
-- Animation không được ảnh hưởng đến scrolling, khả năng phản hồi input,
-  rendering performance, hoặc mức tiêu thụ pin.
+- Prefer animating `transform` and `opacity`.
+- Avoid unnecessary layout recalculation, DOM measurement loops, repeated synchronous DOM reads/writes, animating too many DOM nodes, and React state updates on every animation frame.
+- Animation must not negatively affect scrolling, input responsiveness, rendering performance, or battery consumption.
 
-## Tích hợp React
+## React integration
 
-- Tách animation state khỏi application state khi có thể.
-- Tránh cập nhật React state ở mỗi animation frame.
-- Scope animation theo component; cleanup timeline và listener khi unmount.
-- Tránh re-render không cần thiết; tái sử dụng animation utility hiện có.
-- Ưu tiên animation library imperative (vd. GSAP) cho animation tần suất cao
-  thay vì điều khiển từng frame qua React state.
+- Separate animation state from application state when possible.
+- Avoid updating React state on every animation frame.
+- Scope animation to the component; clean up timelines and listeners on unmount.
+- Avoid unnecessary re-renders; reuse existing animation utilities.
+- Prefer imperative animation libraries (for example, GSAP) for high-frequency animation instead of driving every frame through React state.
 
-## Dùng GSAP (khi project đã có GSAP)
+## Using GSAP (when the project already uses GSAP)
 
-**GSAP là implementation tool, không phải design principle.** Luôn xuất phát
-từ animation-principles.md trước, chọn GSAP feature sau — không đảo ngược.
+**GSAP is an implementation tool, not a design principle.** Always start from `animation-principles.md`, then select the appropriate GSAP feature; do not reverse that order.
 
-- Dùng theo architecture hiện tại của project — không tự ý đổi kiến trúc.
-- Ưu tiên `timeline` cho sequence có phối hợp; dùng label khi giúp code dễ đọc.
-- Dùng stagger khi nó phục vụ hierarchy, không phải mặc định.
-- Trong React: dùng `gsap.context()` hoặc cơ chế cleanup hiện tại của project.
-- Dùng `gsap.matchMedia()` khi behavior khác nhau có ý nghĩa giữa các viewport.
-- Không đưa GSAP vào nếu project đã có giải pháp phù hợp, trừ khi có lý do
-  kỹ thuật/thị giác rõ ràng. Không dùng feature chỉ vì nó tồn tại.
+- Follow the project's current architecture; do not change architecture without a reason.
+- Prefer `timeline` for coordinated sequences; use labels when they improve readability.
+- Use stagger when it serves hierarchy, not by default.
+- In React, use `gsap.context()` or the project's established cleanup mechanism.
+- Use `gsap.matchMedia()` when viewport-specific behavior is meaningful.
+- Do not introduce GSAP when the project already has a suitable solution unless there is a clear technical or visual reason. Do not use a feature merely because it exists.
 
-## Khả năng bị ngắt (interruption)
+## Interruption handling
 
-Interactive animation phải xử lý tốt: click liên tục, hover liên tục,
-navigation trong lúc animation chạy, component unmount, route change,
-viewport change.
+Interactive animation must handle repeated clicks, repeated hovers, navigation while animation is running, component unmount, route changes, and viewport changes.
 
-- Không để animation tiếp tục chạy sau khi component đã bị destroy.
-- Không để tích lũy timeline, event listener, observer, callback.
+- Do not allow animation to continue after the component has been destroyed.
+- Do not accumulate timelines, event listeners, observers, or callbacks.
 
 ## Responsive
 
-- Mobile thường cần: sequence ngắn hơn, khoảng cách chuyển động nhỏ hơn, ít
-  effect đồng thời hơn, parallax nhẹ hơn, choreography đơn giản hơn.
-- Không lấy giá trị desktop rồi scale xuống — thiết kế riêng cho mobile/touch.
+- Mobile often needs shorter sequences, smaller movement distances, fewer simultaneous effects, lighter parallax, and simpler choreography.
+- Do not take desktop values and simply scale them down; design deliberately for mobile/touch.
 
 ## Accessibility
 
-- Luôn tôn trọng `prefers-reduced-motion`.
-- Khi reduced motion bật: loại bỏ chuyển động không cần thiết, giảm transform
-  lớn, tránh parallax quá mức — nhưng **vẫn duy trì** state change có ý nghĩa,
-  usability, và visual hierarchy. Reduced motion không có nghĩa là interaction
-  bị hỏng.
+- Always respect `prefers-reduced-motion`.
+- When reduced motion is enabled, remove unnecessary movement, reduce large transforms, and avoid excessive parallax — while **preserving** meaningful state changes, usability, and visual hierarchy. Reduced motion must not break the interaction.
 
-## Không phá existing behavior / API
+## Preserve existing behavior / API
 
-Task animation phải giữ nguyên phạm vi. Cụ thể:
+Animation tasks must remain within scope. Specifically:
 
-- Không thay đổi behavior không liên quan đến animation.
-- Không thay đổi layout, content, hoặc accessibility semantics nếu task
-  không yêu cầu.
-- Không thay đổi public API của component (props, event, DOM structure)
-  nếu không thực sự cần thiết cho animation.
+- Do not change behavior unrelated to animation.
+- Do not change layout, content, or accessibility semantics unless required by the task.
+- Do not change the component's public API (props, events, DOM structure) unless genuinely necessary for the animation.
 
-Ví dụ: task "add hover animation to Button" không nên kéo theo sửa API của
-Button, đổi cấu trúc DOM, hay động vào state management không liên quan.
+Example: a task such as `add hover animation to Button` should not also modify the Button API, change its DOM structure, or alter unrelated state management.
 
 ## Failure behavior
 
-Animation không được làm hỏng ứng dụng khi nó thất bại:
+Animation must not break the application when it fails:
 
-- Animation failure không được block interaction hoặc business logic bên
-  dưới nó.
-- Animation nên degrade gracefully khi animation API không khả dụng.
-- Business logic không phụ thuộc vào việc animation hoàn thành, trừ khi
-  animation thực sự là một phần bắt buộc của flow (hiếm khi đúng). Mặc định:
-  business action và animation chạy song song/độc lập tương đối, không phải
-  `onClick → animation → onComplete → business action`.
+- Animation failure must not block interaction or the underlying business logic.
+- Animation should degrade gracefully when the animation API is unavailable.
+- Business logic must not depend on animation completion unless animation is genuinely a required part of the flow (rare). By default, the business action and animation should run independently rather than `onClick → animation → onComplete → business action`.
 
-## Visual Validation (khi có môi trường preview)
+## Visual validation (when preview is available)
 
-Không coi animation là hoàn thành chỉ dựa trên đọc code. Khi có công cụ chạy
-dev server / browser preview trong phiên làm việc:
+Do not consider animation complete based on code inspection alone. When a dev server/browser preview is available during the session:
 
-- Chạy trang/component liên quan và quan sát animation ở môi trường render
-  thật.
-- Kiểm tra trạng thái ban đầu và trạng thái cuối.
-- Kiểm tra animation ở tốc độ tương tác bình thường, và khi tương tác lặp lại.
-- Kiểm tra ở mobile viewport và với reduced-motion bật.
-- So sánh với reference/design nếu có.
+- Run the relevant page/component and observe the animation in the actual rendered environment.
+- Check the initial and final states.
+- Check normal interaction speed and repeated interaction.
+- Check mobile viewport and reduced-motion mode.
+- Compare with the reference/design when available.
 
-Nếu không có công cụ preview trong phiên làm việc, bỏ qua bước này — đừng coi
-đây là điều kiện chặn commit, chỉ áp dụng khi thực sự khả thi.
+If no preview tool is available in the session, skip this step. It is not a commit-blocking condition; apply it whenever genuinely feasible.
 
-## Trước khi chọn animation cho một component mới
+## Before choosing animation for a new component
 
-1. Người dùng cần tập trung vào đâu?
-2. Điều gì vừa thay đổi?
-3. Mối quan hệ nào cần được truyền tải?
-4. Hướng chuyển động nào có ý nghĩa?
-5. Cần chuyển động với mức độ bao nhiêu?
-6. Element này có thực sự cần animation không?
+1. What does the user need to focus on?
+2. What just changed?
+3. What relationship needs to be communicated?
+4. What movement direction has meaning?
+5. How much movement is actually needed?
+6. Does this element really need animation?
 
-Dùng chuyển động đơn giản nhất có thể truyền tải hiệu quả behavior mong muốn.
+Use the simplest motion that effectively communicates the intended behavior.
 
 ---
 
@@ -135,42 +109,42 @@ Dùng chuyển động đơn giản nhất có thể truyền tải hiệu quả
 
 ### Design
 
-- [ ] Animation có mục đích rõ ràng.
-- [ ] Visual hierarchy có chủ đích (Primary/Secondary/Tertiary).
-- [ ] Timing và easing phù hợp với chuyển động.
-- [ ] Stagger có mục đích, không phải mặc định.
-- [ ] Hướng chuyển động nhất quán với logic không gian hiện có.
+- [ ] Animation has a clear purpose.
+- [ ] Visual hierarchy is intentional (Primary/Secondary/Tertiary).
+- [ ] Timing and easing fit the movement.
+- [ ] Stagger has a purpose and is not used by default.
+- [ ] Movement direction is consistent with the existing spatial logic.
 
 ### Engineering
 
-- [ ] Component cleanup animation đúng cách (unmount, route change).
-- [ ] Tương tác lặp lại không tạo ra conflict/timeline chồng chéo.
-- [ ] Responsive behavior đã được xem xét (mobile/touch).
-- [ ] `prefers-reduced-motion` được hỗ trợ.
-- [ ] Performance ở mức chấp nhận được (không layout thrashing).
-- [ ] Animation failure không block business logic bên dưới.
-- [ ] Không thay đổi behavior/API ngoài phạm vi task.
-- [ ] Không thêm dependency không cần thiết.
-- [ ] Tuân thủ convention hiện tại của project.
+- [ ] Animation cleanup is correct (unmount, route change).
+- [ ] Repeated interaction does not create conflicts or overlapping timelines.
+- [ ] Responsive behavior has been considered (mobile/touch).
+- [ ] `prefers-reduced-motion` is supported.
+- [ ] Performance is acceptable (no layout thrashing).
+- [ ] Animation failure does not block underlying business logic.
+- [ ] Behavior/API outside the task scope is unchanged.
+- [ ] No unnecessary dependency was added.
+- [ ] Existing project conventions are followed.
 
 ### Verification
 
-- [ ] Type checking pass.
-- [ ] Linting pass.
-- [ ] Các test liên quan pass.
-- [ ] Visual behavior đã được kiểm tra nếu môi trường cho phép.
-- [ ] Final diff không chứa thay đổi không liên quan.
+- [ ] Type checking passes.
+- [ ] Linting passes.
+- [ ] Relevant tests pass.
+- [ ] Visual behavior was checked when the environment allows it.
+- [ ] Final diff contains no unrelated changes.
 
-## Đánh giá chất lượng thị giác (review nhanh)
+## Visual quality review (quick check)
 
-| Khía cạnh | Câu hỏi kiểm tra |
+| Aspect | Review question |
 | --- | --- |
-| Timing | Có quá nhanh/chậm không? Delay có ý nghĩa không? |
-| Hierarchy | Attention người dùng có được dẫn đúng không? Element chính có ưu tiên? |
-| Easing | Chuyển động có tự nhiên, phù hợp với loại chuyển động không? |
-| Rhythm | Các sequence có phối hợp tốt? Stagger/overlap có chủ đích? |
-| Stability | Final state có ổn định? Có chuyển động thừa sau khi hoàn thành? |
-| Interaction | Tương tác lặp lại có mượt? Animation có thể bị ngắt an toàn? |
-| Responsive | Hoạt động tốt trên mobile/touch/các viewport khác nhau? |
-| Accessibility | Reduced motion hoạt động đúng? |
-| Performance | Animation có mượt? Có render/layout calculation thừa không? |
+| Timing | Is it too fast/slow? Does the delay have meaning? |
+| Hierarchy | Is user attention directed correctly? Does the primary element receive priority? |
+| Easing | Does the movement feel natural and appropriate for its type? |
+| Rhythm | Do sequences coordinate well? Is stagger/overlap intentional? |
+| Stability | Is the final state stable? Is there unnecessary movement after completion? |
+| Interaction | Is repeated interaction smooth? Can the animation be safely interrupted? |
+| Responsive | Does it work well across mobile/touch and other viewports? |
+| Accessibility | Does reduced motion work correctly? |
+| Performance | Is the animation smooth? Are there unnecessary render/layout calculations? |
