@@ -35,12 +35,14 @@ Bạn **không cần hiểu mọi file** trong repository này để sử dụng
 | Backend Java / Spring / GraphQL | [`prompts/backend.md`](prompts/backend.md) |
 | Backend Node / Express / Prisma | [`prompts/backend-node.md`](prompts/backend-node.md) |
 | Dựng UI từ Figma / screenshot | [`prompts/ui-design-to-code.md`](prompts/ui-design-to-code.md) |
+| Security baseline dùng chung | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
 | Cách kiểm tra evidence và rủi ro trước khi code | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
 | Cách đánh giá review | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
 | Cách thiết kế test | [`prompts/testing.md`](prompts/testing.md) |
 | Cách refactor | [`prompts/refactor.md`](prompts/refactor.md) |
 | Cách khởi tạo project | [`prompts/project-init.md`](prompts/project-init.md) |
 | Danh sách và trạng thái skill | [`docs/skill-inventory.md`](docs/skill-inventory.md) |
+| Provenance của security skills | [`docs/security-skill-provenance.md`](docs/security-skill-provenance.md) |
 | Ví dụ validation UI | [`docs/ui-design-validation-examples.md`](docs/ui-design-validation-examples.md) |
 | Tự kiểm tra workspace | [`scripts/prompt/validate-workspace.ps1`](scripts/prompt/validate-workspace.ps1) |
 
@@ -99,11 +101,11 @@ Là bộ quy tắc chính. Nó quyết định risk, scope, routing, approval, v
 
 **`prompts/`**
 
-Là các hướng dẫn ngắn cho từng loại công việc, ví dụ frontend, backend, testing hoặc khởi tạo project.
+Là các hướng dẫn ngắn cho từng loại công việc, ví dụ frontend, backend, security, testing hoặc khởi tạo project.
 
 **`skills/`**
 
-Là các khả năng có thể tái sử dụng. Nhiều skill được copy/sync từ các project công khai. Chỉ đọc khi task thực sự cần.
+Là các khả năng có thể tái sử dụng. Nhiều skill được copy, adapt hoặc sync từ các project công khai. Chỉ đọc khi task thực sự cần.
 
 **`contracts/`**
 
@@ -115,7 +117,7 @@ Các chương trình dùng để kiểm tra xem kết quả thực tế có đú
 
 **`docs/`**
 
-Ví dụ, inventory và ghi chú. Đây là tài liệu tham khảo, không phải nơi chứa global rule.
+Ví dụ, inventory, provenance và ghi chú. Đây là tài liệu tham khảo, không phải nơi chứa global rule.
 
 ---
 
@@ -131,6 +133,7 @@ Ví dụ:
 | Rule frontend | [`prompts/frontend.md`](prompts/frontend.md) |
 | Rule Java / Spring | [`prompts/backend.md`](prompts/backend.md) |
 | Rule Node / Prisma | [`prompts/backend-node.md`](prompts/backend-node.md) |
+| Security baseline dùng chung | [`prompts/security-baseline.md`](prompts/security-baseline.md) |
 | Evidence và failure analysis trước code | [`prompts/reference-crosscheck.md`](prompts/reference-crosscheck.md) |
 | Rule review | [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md) |
 | Thiết kế test | [`prompts/testing.md`](prompts/testing.md) |
@@ -141,6 +144,11 @@ Ví dụ:
 | Kiểm tra FE ↔ BE | [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md) |
 | Kiểm tra contract BE | [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md) |
 | Kiểm tra state BE | [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md) |
+| Security API/configuration design | [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md) |
+| Security variant hunting | [`skills/trailofbits-variant-analysis/SKILL.md`](skills/trailofbits-variant-analysis/SKILL.md) |
+| CI/CD security scanning | [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md) |
+| Malicious npm triage | [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md) |
+| Policy as code | [`skills/anthropic-opa-policy-as-code/SKILL.md`](skills/anthropic-opa-policy-as-code/SKILL.md) |
 | Format contract UI | [`contracts/ui-design-contract.schema.json`](contracts/ui-design-contract.schema.json) |
 | Format contract FE ↔ BE | [`contracts/cross-layer-contract.schema.json`](contracts/cross-layer-contract.schema.json) |
 | Validator UI | [`scripts/ui/validate-design-contract.ps1`](scripts/ui/validate-design-contract.ps1) |
@@ -169,6 +177,8 @@ Ví dụ:
 - UI interaction → [`skills/ui-interaction-contract/SKILL.md`](skills/ui-interaction-contract/SKILL.md)
 - FE ↔ BE boundary → [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md)
 - Kiểm tra cấu trúc design → [`skills/ui-design-validator/SKILL.md`](skills/ui-design-validator/SKILL.md)
+- Security-sensitive frontend design → [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md)
+- npm dependency security → [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md)
 
 ### Task Java / Spring / GraphQL
 
@@ -176,15 +186,47 @@ Bắt đầu từ [`prompts/backend.md`](prompts/backend.md).
 
 Chỉ load capability cần thiết, ví dụ [`skills/backend-contract-validation/SKILL.md`](skills/backend-contract-validation/SKILL.md), [`skills/backend-state-transition/SKILL.md`](skills/backend-state-transition/SKILL.md), hoặc [`skills/cross-layer-contract/SKILL.md`](skills/cross-layer-contract/SKILL.md).
 
+Security-sensitive backend design có thể route thêm [`skills/trailofbits-sharp-edges/SKILL.md`](skills/trailofbits-sharp-edges/SKILL.md), còn CI/CD security work có thể route tới [`skills/anthropic-devsecops-security-scanning/SKILL.md`](skills/anthropic-devsecops-security-scanning/SKILL.md).
+
 ### Task Node / Express / Prisma
 
 Bắt đầu từ [`prompts/backend-node.md`](prompts/backend-node.md).
 
-Dùng các capability validation tương tự khi trigger của chúng phù hợp.
+Dùng các capability validation và security tương tự khi trigger của chúng phù hợp. Với npm supply-chain investigation, dùng [`skills/anthropic-malicious-npm-package-triage/SKILL.md`](skills/anthropic-malicious-npm-package-triage/SKILL.md).
 
 ---
 
-## 6. Dựng UI từ Figma hoặc screenshot
+## 6. Security workflow
+
+Security được chia thành các lớp, thay vì copy vào từng prompt project:
+
+```text
+project-init-fe / project-init-be
+          ↓
+security-baseline.md
+          ↓
+specialized security skill khi trigger phù hợp
+          ↓
+verification
+```
+
+Baseline bao phủ authentication, authorization, resource isolation, input security, browser security, secrets, service boundaries, observability và dependency risk.
+
+Specialized skills bổ sung quy trình sâu hơn:
+
+- **Trail of Bits sharp edges** — thiết kế API/configuration secure-by-default.
+- **Trail of Bits variant analysis** — tìm các instance khác sau khi đã phát hiện một defect.
+- **DevSecOps scanning** — secrets, SAST, SCA, container/IaC và DAST trong CI/CD.
+- **Malicious npm triage** — điều tra phòng thủ đối với npm package đáng ngờ.
+- **OPA policy as code** — policy thực thi cho Kubernetes/IaC/CI/CD.
+
+Các skill này **conditional**, không load cả collection cho một task bình thường.
+
+Provenance và license của các adapted skills được ghi tại [`docs/security-skill-provenance.md`](docs/security-skill-provenance.md).
+
+---
+
+## 7. Dựng UI từ Figma hoặc screenshot
 
 Luồng chính:
 
@@ -222,7 +264,7 @@ Các ví dụ khác có ở [`docs/ui-design-validation-examples.md`](docs/ui-de
 
 ---
 
-## 7. Ngăn lỗi trước khi code
+## 8. Ngăn lỗi trước khi code
 
 Với task lớn hoặc có rủi ro cao, agent nên thử tìm cách làm thiết kế sai **trước khi viết code**:
 
@@ -257,7 +299,7 @@ Chi tiết nằm ở [`prompts/reference-crosscheck.md`](prompts/reference-cross
 
 ---
 
-## 8. Contract và kiểm tra tự động
+## 9. Contract và kiểm tra tự động
 
 Một contract trả lời:
 
@@ -293,7 +335,7 @@ powershell -ExecutionPolicy Bypass -File .cursor/scripts/prompt/validate-workspa
 
 ---
 
-## 9. Khởi tạo project
+## 10. Khởi tạo project
 
 Chọn hướng dẫn nhỏ nhất phù hợp:
 
@@ -307,7 +349,7 @@ Chọn hướng dẫn nhỏ nhất phù hợp:
 
 ---
 
-## 10. Review và test
+## 11. Review và test
 
 ### Review
 
@@ -315,6 +357,8 @@ Chọn hướng dẫn nhỏ nhất phù hợp:
 - Review specification FE → [`prompts/frontend-spec-review-workflow.md`](prompts/frontend-spec-review-workflow.md)
 - Review cường độ cao → [`prompts/codex-connector-review.md`](prompts/codex-connector-review.md)
 - Rule review chung → [`prompts/review-output-baseline.md`](prompts/review-output-baseline.md)
+
+Với security defect đã xác nhận, `trailofbits-variant-analysis` có thể được load để tìm cùng root cause ở nơi khác thay vì thêm một ví dụ bug cụ thể vào global prompt.
 
 ### Testing
 
@@ -324,7 +368,7 @@ Nếu task cần TDD / test-first, load [`skills/tdd/SKILL.md`](skills/tdd/SKILL
 
 ---
 
-## 11. Skill inventory
+## 12. Skill inventory
 
 Thư mục `skills/` cố ý lớn. Không phải skill nào cũng cần đọc trong mọi task.
 
@@ -341,15 +385,17 @@ Một skill không nằm trong workflow mặc định **không có nghĩa là n�
 
 ---
 
-## 12. Upstream skills
+## 13. Upstream và curated skills
 
-Nhiều skill trong [`skills/`](skills/) được đồng bộ từ các project công khai.
+Nhiều skill trong [`skills/`](skills/) được đồng bộ hoặc adapt từ các project công khai.
 
 Nguyên tắc đơn giản:
 
 **không sửa skill upstream chỉ để ép nó phù hợp với workspace này.**
 
-Thay vào đó, đặt behavior riêng của workspace trong:
+Đối với security skills được curated, file local là một adaptation có provenance rõ ràng và chỉ được route khi đúng trigger.
+
+Behavior riêng của workspace nên nằm trong:
 
 - [`AGENTS.md`](AGENTS.md)
 - [`prompts/`](prompts/)
@@ -359,13 +405,13 @@ Thay vào đó, đặt behavior riêng của workspace trong:
 
 Nếu một upstream skill yêu cầu điều gì xung đột với rule workspace, rule workspace được ưu tiên.
 
-Thông tin source hiện tại: [`docs/skill-inventory.md`](docs/skill-inventory.md).
+Thông tin source và routing hiện tại: [`docs/skill-inventory.md`](docs/skill-inventory.md).
 
 ---
 
-## 13. Sau khi sync skill
+## 14. Sau khi sync hoặc thêm skill
 
-Khi thư mục `skills/` được cập nhật từ upstream:
+Khi thư mục `skills/` được cập nhật từ upstream hoặc thêm curated security skill:
 
 ```text
 1. Refresh [skill inventory](docs/skill-inventory.md)
@@ -373,14 +419,15 @@ Khi thư mục `skills/` được cập nhật từ upstream:
 3. Kiểm tra các link prompt → skill
 4. Tìm skill mới liên quan software nhưng chưa được route
 5. Xóa tên skill cũ / không còn tồn tại
-6. Chạy [workspace self-check](scripts/prompt/validate-workspace.ps1)
+6. Kiểm tra dependency của skill imported/curated đã đầy đủ
+7. Chạy [workspace self-check](scripts/prompt/validate-workspace.ps1)
 ```
 
 Không thêm skill vào context mặc định chỉ vì skill đó tồn tại.
 
 ---
 
-## 14. Phiên bản ngôn ngữ
+## 15. Phiên bản ngôn ngữ
 
 - **Tiếng Việt:** file này, [`README.vi.md`](README.vi.md)
 - **English:** [`README.md`](README.md)
