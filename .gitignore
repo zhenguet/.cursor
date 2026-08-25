@@ -1,0 +1,12 @@
+# Local/private MCP configuration
+mcp.json
+mcp.local.json
+.mcp.local.json
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local tool state
+.cursor-local/
