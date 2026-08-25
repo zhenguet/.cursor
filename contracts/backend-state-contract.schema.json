@@ -1,14 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "backend-state-contract.schema.json",
   "title": "Backend State Contract",
   "type": "object",
   "required": ["version", "states", "transitions"],
   "properties": {
-    "version": { "type": "string" },
+    "version": { "type": "string", "minLength": 1 },
     "states": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "minItems": 1
     },
     "transitions": {
       "type": "array",
@@ -16,16 +18,27 @@
         "type": "object",
         "required": ["current", "action", "allowed"],
         "properties": {
-          "current": { "type": "string" },
-          "action": { "type": "string" },
+          "current": { "type": "string", "minLength": 1 },
+          "action": { "type": "string", "minLength": 1 },
           "allowed": { "type": "boolean" },
           "next": { "type": ["string", "null"] },
-          "idempotent": { "type": "boolean" },
-          "sideEffects": { "type": "array", "items": { "type": "string" } }
+          "idempotent": { "type": ["boolean", "null"] },
+          "sideEffects": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "authorization": {
+            "type": "object",
+            "properties": {
+              "required": { "type": "boolean" },
+              "roles": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+              "permissions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            },
+            "additionalProperties": false
+          },
+          "metadata": { "type": "object" }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
-    }
+    },
+    "metadata": { "type": "object" }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }
