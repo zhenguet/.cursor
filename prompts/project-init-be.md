@@ -61,6 +61,18 @@ Explicitly challenge:
 - rate-limit/resource-exhaustion paths
 - sensitive information disclosure through errors, logs, or health endpoints
 
+## Security skill routing
+
+Load specialized security skills when their task signal applies. Do not load all security skills by default.
+
+- `trailofbits-sharp-edges` — security-sensitive API/configuration design, dangerous defaults, fail-open behavior, and misuse-resistant interfaces.
+- `trailofbits-variant-analysis` — immediately after a confirmed vulnerability or reusable bad pattern to search for other instances of the same root cause.
+- `anthropic-devsecops-security-scanning` — CI/CD security gates, secrets scanning, SAST/SCA, container/IaC scanning, or DAST setup.
+- `anthropic-opa-policy-as-code` — Kubernetes, infrastructure, or CI/CD policy-as-code enforcement with OPA/Gatekeeper.
+- `anthropic-malicious-npm-package-triage` — only when the backend uses npm packages and a dependency is being vetted or investigated for supply-chain compromise.
+
+These skills supplement `security-baseline.md`; they do not override `.cursor/AGENTS.md`, product requirements, or repository policy.
+
 ## API boundary
 
 When FE-facing behavior is required:
@@ -133,6 +145,7 @@ API boundary:
 Authentication:
 Authorization:
 Security controls:
+Security skills loaded:
 Domain structure:
 Database:
 Transactions:
