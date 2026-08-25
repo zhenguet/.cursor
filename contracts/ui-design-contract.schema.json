@@ -30,9 +30,10 @@
           "row": { "type": "integer", "minimum": 0 },
           "column": { "type": "integer", "minimum": 1 },
           "columnSpan": { "type": "integer", "minimum": 1 },
-          "rowSpan": { "type": "integer", "minimum": 1 }
+          "rowSpan": { "type": "integer", "minimum": 1 },
+          "metadata": { "type": "object" }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
     },
     "layout": {
@@ -56,14 +57,17 @@
               "expectedItemOrder": {
                 "type": "array",
                 "items": { "type": "string", "minLength": 1 }
-              }
+              },
+              "metadata": { "type": "object" }
             },
-            "additionalProperties": true
+            "additionalProperties": false
           }
-        }
+        },
+        "metadata": { "type": "object" }
       },
-      "additionalProperties": true
-    }
+      "additionalProperties": false
+    },
+    "metadata": { "type": "object" }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }
