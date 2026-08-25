@@ -99,7 +99,6 @@ These skills were selected from high-signal public security skill repositories a
 |---|---|---|---|
 | `ask-matt` | NON-CORE | Low/Medium | External expert/persona consultation rather than engineering capability |
 | `caveman` | NON-CORE | Low | Output/token compression, not software engineering |
-| `claude-handoff` | NON-CORE | Medium | Claude-specific handoff |
 | `loop-me` | NON-CORE | Low/Medium | Generic process loop rather than software-specific capability |
 | `scaffold-exercises` | NON-CORE | Medium | Educational exercise/scaffolding rather than production engineering |
 | `teach` | NON-CORE | Medium | Teaching/learning workflow |
@@ -146,7 +145,7 @@ writing-guidelines
 writing-shape
 ```
 
-Security skills are deliberately excluded from this manual-only list because they are now conditionally routed by `project-init-fe.md`, `project-init-be.md`, and `security-baseline.md`.
+Security skills are deliberately excluded from this manual-only list because they are now conditionally routed by `project-init-fe.md`, `project-init-be.md`, `AGENTS.md`, and `security-baseline.md`.
 
 ## Missing / stale routing discovered during sync review
 
