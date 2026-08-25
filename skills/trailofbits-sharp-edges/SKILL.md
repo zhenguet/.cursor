@@ -6,7 +6,7 @@ description: >-
   silent failures, type confusion, and insecure-by-default designs. Adapted from
   Trail of Bits sharp-edges for this workspace.
 source: https://github.com/trailofbits/skills/tree/main/plugins/sharp-edges
-source-license: Apache-2.0
+source-license: CC-BY-SA-4.0
 ---
 
 # Security Sharp Edges
