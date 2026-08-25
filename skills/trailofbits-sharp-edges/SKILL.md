@@ -7,12 +7,13 @@ description: >-
   Trail of Bits sharp-edges for this workspace.
 source: https://github.com/trailofbits/skills/tree/main/plugins/sharp-edges
 source-license: CC-BY-SA-4.0
+license: CC-BY-SA-4.0
+adaptation: Condensed adaptation for this workspace; not an unmodified upstream copy.
 ---
 
 # Security Sharp Edges
 
-Use this skill when a design exposes security-relevant choices to developers and
-an insecure path could be easier than the secure path.
+Use this skill when a design exposes security-relevant choices to developers and an insecure path could be easier than the secure path.
 
 ## When to Use
 
@@ -96,17 +97,6 @@ Challenge permissions, roles, scopes, URLs, algorithms, and security modes repre
 6. Check failure paths for fail-open behavior.
 7. Model a malicious developer, a rushed developer, and a confused developer.
 8. Reproduce the misuse when feasible and verify whether it creates a real security consequence.
-
-## Rationalizations to Reject
-
-| Rationalization | Required response |
-|---|---|
-| "It is documented." | Prefer a safe default or constrained API. |
-| "Advanced users need flexibility." | Keep unsafe primitives behind explicit, difficult-to-misuse boundaries. |
-| "It is the developer's responsibility." | Treat the API/configuration design as part of the security boundary. |
-| "Nobody would configure it that way." | Test the dangerous value and reject it when it is invalid. |
-| "It is only configuration." | Validate configuration like code. |
-| "Backwards compatibility requires the unsafe default." | Require an explicit migration or opt-in rather than preserving a dangerous default. |
 
 ## Verification
 
