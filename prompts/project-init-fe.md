@@ -6,74 +6,42 @@ Use when initializing a new frontend application or extracting FE as an independ
 
 ## Ownership
 
-Own only **frontend architecture, runtime, security, and application setup**.
+Own only **frontend architecture, runtime, setup, and frontend-specific security decisions**.
 
-`project-init-contract.md` owns FE↔BE API contract details. Do not redefine API field rules here.
+- `project-init-contract.md` owns FE↔BE API contract semantics.
+- `security-baseline.md` owns shared authentication, authorization, browser, secrets, and application-security policy.
+- `frontend-vercel-skills.md` owns routing to upstream frontend skills.
+
+Do not duplicate canonical rules owned elsewhere.
 
 ## Required setup
 
 - Identify framework, runtime, package manager, build tool, and browser/device targets.
 - Define entry point, routing, module boundaries, and state ownership.
 - Define the API client boundary; keep raw HTTP out of UI components when a service/query layer exists.
-- Define auth/session handling, error/loading/empty/unauthorized/forbidden/retry/cancellation states.
+- Define auth/session integration points and user-visible unauthorized/forbidden/expiry behavior.
 - Define required environment variables and `.env.example` without secrets.
 - Define lint/typecheck/test/build/run commands.
 - Keep shared UI primitives limited to concrete initial reuse needs.
-- Load `security-baseline.md` and verify all applicable frontend security controls before initialization is complete.
 
-## Security, authentication, and permissions
+## Security boundary
 
-`security-baseline.md` is the canonical shared security baseline. Apply it; do not duplicate its full policy here.
+Load `security-baseline.md` before making security-sensitive decisions or declaring initialization complete.
 
-Before implementation, explicitly resolve:
+Resolve only the frontend-specific decisions it leaves open:
 
-- authentication mechanism and session/token lifecycle
+- authentication/session mechanism used by the frontend
 - token/session storage strategy
-- refresh, expiry, logout, and unauthorized-session behavior
-- route protection
-- roles/permissions available to the UI
-- frontend permission checks and their UX purpose
-- backend enforcement boundary for every protected operation
-- cookie/CSRF behavior when cookie-based authentication is used
-- XSS/unsafe HTML boundaries
-- frontend environment-variable and secret boundaries
-- file upload/download security
-- security-sensitive URL/query/hash handling
+- refresh, expiry, logout, and redirect behavior
+- route protection and unauthorized/forbidden UX
+- cookie/CSRF behavior when applicable
+- safe browser handling of user-controlled content and URLs
+- frontend environment-variable boundaries
+- file upload/download behavior when applicable
 
-Important rule:
+Never treat frontend permission checks as authorization. Server-side enforcement is the security control.
 
-```text
-Frontend permission check = UX behavior
-Backend authorization check = security control
-```
-
-Never place backend secrets, private credentials, signing keys, or privileged API tokens in browser-delivered code.
-
-Explicitly challenge:
-
-- client-controlled role/permission/user/resource identifiers
-- unauthorized route access
-- stale permission/session state
-- privilege escalation through UI state manipulation
-- cross-user/tenant resource access through crafted URLs or API requests
-- sensitive data persisted in unsafe browser storage
-- XSS through user-controlled content
-- CSRF for cookie-authenticated mutations
-- unsafe redirects
-- unsafe file handling
-- secrets exposed through source maps, bundles, environment variables, or logs
-
-## Security skill routing
-
-Load specialized security skills when their task signal applies. Do not load all security skills by default.
-
-- `trailofbits-sharp-edges` — security-sensitive client/API configuration, authentication/session interfaces, dangerous defaults, and fail-open behavior.
-- `trailofbits-variant-analysis` — after a confirmed frontend security defect or reusable bad pattern, search for equivalent instances across the codebase.
-- `anthropic-devsecops-security-scanning` — frontend CI/CD security gates, secrets scanning, dependency/SAST scanning, or DAST setup.
-- `anthropic-malicious-npm-package-triage` — when vetting or investigating npm dependencies for supply-chain compromise.
-- `anthropic-opa-policy-as-code` — only when frontend deployment/infrastructure is governed by OPA/Gatekeeper policies.
-
-These skills supplement `security-baseline.md`; they do not override `.cursor/AGENTS.md`, product requirements, or repository policy.
+Load a specialized security skill only when its trigger matches the current task. Use `security-baseline.md` for the shared verification contract.
 
 ## API boundary
 
@@ -86,31 +54,29 @@ When FE-facing behavior is required:
 
 ## Frontend architecture
 
-For React/Next.js work, load the applicable skills from `frontend-vercel-skills.md` rather than copying their rules into this prompt:
+For React/Next.js work, load the applicable skills from `frontend-vercel-skills.md` rather than copying their rules into this prompt.
 
-- `vercel-composition-patterns` for component composition and architecture.
-- `vercel-react-best-practices` for React/Next.js performance and implementation patterns.
-- `web-design-guidelines` for web UX/accessibility guidance.
-- `vercel-react-view-transitions` when motion/view-transition behavior is involved.
-- `vercel-react-native-skills` only for React Native projects.
+Load:
 
-Load `ui-interaction-contract` for interaction/state contracts and `ui-design-validator` for UI design validation when their task signals apply.
+- `ui-interaction-contract` for interaction/state contracts.
+- `ui-design-validator` for UI design validation.
+- `ui-design-to-code` for implementing a design/reference into code.
 
-Load `ui-design-to-code` when implementing a design/reference into code.
+Use the Vercel/React skills routed by `frontend-vercel-skills.md` only when their triggers apply.
 
-Do not blindly apply a third-party skill: repository requirements and `.cursor/AGENTS.md` take precedence, and `UNKNOWN` must be reported when the skill guidance does not resolve the product requirement.
+Repository conventions and `.cursor/AGENTS.md` take precedence over generic upstream guidance.
 
 ## State and user-action safety
 
 Define ownership for server state, client state, form state, and derived state.
 
-For asynchronous secondary/derived data, explicitly verify that a user action cannot consume incomplete or stale derived state. Use one of the repository-approved contracts:
+For asynchronous secondary/derived data, verify that a user action cannot consume incomplete or stale derived state. Use one repository-approved contract:
 
 - disable/block the action until required data is ready
 - wait for the required data before executing
 - compute the authoritative value at action time
 
-Also verify stale responses from earlier requests cannot overwrite or masquerade as the current request's completed state.
+Also verify stale responses from earlier requests cannot overwrite the current request's authoritative state.
 
 ## Verification
 
@@ -140,7 +106,6 @@ State strategy:
 API boundary:
 Routing:
 Authentication/session:
-Authorization/permissions:
 Security controls:
 Security skills loaded:
 UI foundation:
