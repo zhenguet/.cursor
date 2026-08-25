@@ -6,7 +6,7 @@ Read this prompt when reviewing, restructuring, or rewriting system prompts, rul
 
 Global language, risk, scope, approval, and verification policies are defined only in `@.cursor/AGENTS.md`.
 
-Keep prompt content in its existing language unless the user requests a language change.
+Workspace prompts, rules, and skills MUST be written in English. Preserve quoted external text, code identifiers, UI copy, paths, and specification text in their original language when required for fidelity.
 
 ---
 
@@ -119,3 +119,4 @@ When rewriting is requested:
 - [ ] Critical and high findings resolved.
 - [ ] Rewritten prompt self-reviewed.
 - [ ] Cross-references and formatting verified.
+- [ ] Workspace prompt/rule/skill text is English unless preserving required source text.
