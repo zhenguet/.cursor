@@ -1,186 +1,128 @@
-# Nguyên tắc Animation — Triết lý thiết kế
+# Animation Principles — Design Philosophy
 
-> Tài liệu này trả lời câu hỏi "vì sao" và "khi nào". Dùng để đọc một lần lúc onboard,
-> hoặc tham khảo khi cần quyết định về mặt thiết kế/UX cho animation.
-> Với checklist tra cứu nhanh khi code/review PR, xem `animation-checklist.md`.
+> This document answers "why" and "when". Read it once during onboarding or consult it when making animation and UX design decisions.
+> For a quick implementation/review checklist, see `animation-checklist.md`.
 
-## Mục đích
+## Purpose
 
-Định nghĩa nguyên tắc để thiết kế và triển khai animation chất lượng cao trên web,
-áp dụng cho: UI animation, page transition, component interaction, scroll-driven
-animation, micro-interaction, và hệ thống motion của toàn bộ giao diện.
+Define principles for designing and implementing high-quality animation on the web, including UI animation, page transitions, component interaction, scroll-driven animation, micro-interactions, and the motion system of the overall interface.
 
-Mục tiêu **không phải** là tạo ra càng nhiều animation càng tốt, mà là tạo ra
-chuyển động **có chủ đích, nhất quán, phản hồi tốt, hiệu năng cao, dễ tiếp cận**.
+The goal is **not** to create as much animation as possible, but to create motion that is **intentional, consistent, responsive, performant, and accessible**.
 
 ---
 
-## Priority — thứ tự ưu tiên khi có xung đột
+## Priority — order of precedence when principles conflict
 
-Không phải mọi nguyên tắc trong tài liệu này có cùng mức độ quan trọng. Khi
-hai nguyên tắc mâu thuẫn nhau, xử lý theo thứ tự sau (cao → thấp):
+Not every principle in this document has equal importance. When two principles conflict, resolve them in this order (highest → lowest):
 
-1. **Accessibility / usability** — `prefers-reduced-motion`, không phá chức
-   năng, không phụ thuộc hover cho hành động quan trọng.
-2. **Correctness** — cleanup đúng cách, không leak timeline/listener, không
-   để animation chạy sau khi component bị destroy, không phá behavior/API
-   hiện có ngoài phạm vi task.
-3. **Performance** — ưu tiên `transform`/`opacity`, tránh layout thrashing.
-4. **Convention hiện tại của project** — pattern/utility animation đã có sẵn.
-5. **Visual consistency** — hierarchy, hướng chuyển động, logic không gian.
-6. **Motion polish** — timing cụ thể, kiểu easing, mức độ bounce/stagger.
+1. **Accessibility / usability** — `prefers-reduced-motion`, do not break functionality, do not depend on hover for important actions.
+2. **Correctness** — proper cleanup, no leaked timelines/listeners, no animation after component destruction, no unrelated behavior/API changes.
+3. **Performance** — prefer `transform`/`opacity`, avoid layout thrashing.
+4. **Existing project conventions** — established animation patterns/utilities.
+5. **Visual consistency** — hierarchy, movement direction, spatial logic.
+6. **Motion polish** — specific timing, easing style, bounce/stagger intensity.
 
-Nói cách khác: **cứng — không thương lượng** là (1)–(3); **mềm — điều chỉnh
-theo gu thẩm mỹ/brand/convention** là (4)–(6). Khi một chi tiết polish (vd.
-easing, bounce) mâu thuẫn với convention sẵn có của project, ưu tiên
-convention và bàn thay đổi riêng — đừng tự ý phá vỡ tính nhất quán trong một
-PR đơn lẻ.
+In other words: (1)–(3) are **hard constraints — non-negotiable**; (4)–(6) are **soft constraints — adjustable based on aesthetics, brand, and conventions**. When a polish detail (for example, easing or bounce) conflicts with an established project convention, prefer the convention and discuss the change separately rather than breaking consistency in a single PR.
 
 ---
 
-## 1. Animation là một hình thức giao tiếp
+## 1. Animation is a form of communication
 
-Animation phải truyền tải một ý nghĩa nào đó: thứ bậc thị giác, quan hệ nguyên
-nhân – kết quả, quan hệ không gian, thay đổi trạng thái, phản hồi hệ thống, tính
-liên tục, trọng tâm, tiến trình.
+Animation should communicate meaning: visual hierarchy, cause and effect, spatial relationships, state changes, system feedback, continuity, focus, or progress.
 
-Không thêm animation chỉ vì một element *có thể* được animate. Mỗi animation
-quan trọng phải có mục đích rõ ràng — nếu bỏ animation mà không làm giảm khả
-năng sử dụng hay hiểu giao diện, hãy xem lại liệu nó có thực sự cần thiết.
+Do not add animation merely because an element *can* be animated. Every important animation should have a clear purpose. If removing it does not reduce usability or understanding, reconsider whether it is actually necessary.
 
-## 2. Hiểu giao diện trước khi thiết kế animation
+## 2. Understand the interface before designing animation
 
-Trước khi triển khai: kiểm tra UI hiện tại, xác định thứ bậc thị giác chính và
-hành động người dùng dự kiến, kiểm tra pattern/utility animation đang dùng,
-behavior responsive, yêu cầu accessibility, giới hạn performance.
+Before implementation: inspect the current UI, identify the primary visual hierarchy and expected user actions, inspect existing animation patterns/utilities, responsive behavior, accessibility requirements, and performance constraints.
 
-Không thiết kế animation tách biệt khỏi giao diện — motion phải củng cố thiết
-kế hiện tại thay vì cạnh tranh với nó.
+Do not design animation separately from the interface. Motion should reinforce the existing design rather than compete with it.
 
-## 3. Xây dựng thứ bậc chuyển động
+## 3. Build a motion hierarchy
 
-Không phải element nào cũng nên có mức độ animation giống nhau:
+Not every element should receive the same level of animation:
 
-- **Primary** — cần thu hút chú ý trước tiên: tiêu đề trang, CTA chính, hình
-  ảnh sản phẩm chính, trạng thái quan trọng, kết quả của interaction chính.
-- **Secondary** — hỗ trợ nội dung chính: description, metadata, control phụ.
-- **Tertiary** — trang trí / hoàn thiện: element trang trí, ambient effect.
+- **Primary** — needs attention first: page title, primary CTA, main product image, important status, or the result of a primary interaction.
+- **Secondary** — supports the primary content: description, metadata, secondary controls.
+- **Tertiary** — decorative or finishing elements: decorative elements, ambient effects.
 
-Primary nên có ưu tiên motion cao hơn. Không animate mọi element cùng cường độ.
+Primary elements should receive greater motion priority. Do not animate every element with equal intensity.
 
-## 4. Thiết kế choreography trước khi implementation
+## 4. Design choreography before implementation
 
-Xem animation như một chuỗi chuyển động, không phải hiệu ứng độc lập. Xác định:
-trạng thái ban đầu → trigger → chuyển động đầu tiên → chuyển động hỗ trợ →
-điểm nhấn chính → trạng thái ổn định cuối cùng.
+Treat animation as a sequence of movements, not an isolated effect. Define:
+initial state → trigger → first movement → supporting movement → main emphasis → stable final state.
 
-Mỗi delay phải đóng góp vào hierarchy, quan hệ nguyên nhân – kết quả, hoặc
-rhythm — tránh delay tùy tiện.
+Every delay should contribute to hierarchy, cause and effect, or rhythm. Avoid arbitrary delays.
 
 ## 5. Timing
 
-Timing truyền tải mức độ quan trọng và cảm giác vật lý của chuyển động. Không
-dùng cùng một duration cho các element không liên quan.
+Timing communicates importance and the physical character of movement. Do not use the same duration for unrelated elements.
 
-| Loại animation           | Khoảng thời gian |
-| ------------------------ | ----------------: |
-| Micro interaction         | 100–200ms |
-| State transition nhỏ      | 150–300ms |
-| Component entrance        | 250–500ms |
-| Chuỗi entrance phức tạp    | 500–1200ms |
-| Visual transition lớn     | 400–1000ms |
+| Animation type | Duration |
+| --- | ---: |
+| Micro interaction | 100–200ms |
+| Small state transition | 150–300ms |
+| Component entrance | 250–500ms |
+| Complex entrance sequence | 500–1200ms |
+| Large visual transition | 400–1000ms |
 
-Đây là điểm khởi đầu tham khảo, không phải quy tắc cứng — điều chỉnh theo
-khoảng cách chuyển động, độ phức tạp, hierarchy và ngữ cảnh tương tác. Không
-được đánh đổi UX hoặc visual intent chỉ để nằm trong range.
+These are reference starting points, not hard rules. Adjust for movement distance, complexity, hierarchy, and interaction context. Do not sacrifice UX or visual intent merely to stay within a range.
 
 ## 6. Easing
 
-Easing thể hiện đặc tính của chuyển động (phản hồi nhanh, mượt, nặng, nhẹ, có
-tính vật lý, vui nhộn, năng động, tiết chế...). Không dùng cùng một easing cho
-mọi animation.
+Easing expresses the character of movement (fast response, smoothness, weight, lightness, physicality, playfulness, energy, restraint). Do not use the same easing for every animation.
 
-Acceleration/deceleration rõ hơn cho chuyển động lớn; easing nhẹ cho
-micro-interaction. Tránh bounce/elastic quá mức trừ khi visual language của
-sản phẩm thực sự yêu cầu.
+Use clearer acceleration/deceleration for large movements and lighter easing for micro-interactions. Avoid excessive bounce/elastic behavior unless the product's visual language genuinely requires it.
 
-## 7. Stagger, hướng chuyển động và tính liên tục
+## 7. Stagger, movement direction, and continuity
 
-**Stagger** tạo hierarchy và rhythm — dùng khi nhiều element tạo thành một
-sequence hoặc cần reveal tuần tự. Tránh khi nó làm nội dung quan trọng xuất
-hiện quá muộn, các element không liên quan nhau, hoặc trở nên lặp lại nhàm chán.
+**Stagger** creates hierarchy and rhythm. Use it when multiple elements form a sequence or need to be revealed progressively. Avoid it when important content appears too late, when elements are unrelated, or when the pattern becomes repetitive.
 
-**Hướng chuyển động** phải có ý nghĩa: từ dưới lên có thể biểu thị tiếp nối;
-từ bên cạnh biểu thị chuyển động không gian; scale biểu thị tập trung/nhấn
-mạnh; fade biểu thị xuất hiện/biến mất. Duy trì logic không gian nhất quán —
-nếu element exit sang trái, đừng cho destination liên quan xuất hiện từ hướng
-ngược lại mà không có lý do.
+**Movement direction** should have meaning: upward movement can suggest continuation; lateral movement can communicate spatial movement; scale can communicate focus/emphasis; fade can communicate appearance/disappearance. Maintain consistent spatial logic. If an element exits to the left, do not make a related destination appear from the opposite direction without a reason.
 
-**Tính liên tục** — animation nên giúp người dùng hiểu: element này đến từ
-đâu, đang đi đâu, điều gì gây ra thay đổi trạng thái, mối quan hệ giữa hai
-trạng thái là gì. Ưu tiên transition giải thích sự thay đổi thay vì hiệu ứng
-thị giác không liên quan.
+**Continuity** — animation should help users understand where an element came from, where it is going, what caused the state change, and how two states relate. Prefer transitions that explain change over unrelated visual effects.
 
-## 8. Phản hồi tương tác
+## 8. Interaction feedback
 
-Element có thể tương tác (hover, focus, active, pressed, selected, expanded,
-loading, success, error...) phải cung cấp phản hồi phù hợp và kịp thời. Mức độ
-phản hồi phải tương xứng với hành động — một click button không cần cinematic
-animation trừ khi interaction đó thực sự yêu cầu.
+Interactive elements (hover, focus, active, pressed, selected, expanded, loading, success, error, etc.) should provide appropriate and timely feedback. Feedback should match the action; a button click does not need cinematic animation unless the interaction genuinely requires it.
 
-**Hover/pointer**: nên phản hồi nhanh, reversible, tinh tế, có thể bị ngắt.
-Không tạo animation mới cho mỗi pointer event — ưu tiên điều khiển animation
-hiện tại hoặc chuyển state. Không phụ thuộc hoàn toàn vào hover cho chức năng
-quan trọng (touch device không có hover truyền thống).
+**Hover/pointer**: feedback should be fast, reversible, subtle, and interruptible. Do not create a new animation for every pointer event; prefer controlling the current animation or changing state. Never rely entirely on hover for important functionality because touch devices do not have traditional hover.
 
 ## 9. Scroll-driven animation
 
-Scroll animation phải hỗ trợ nội dung, không chống lại hành động scroll của
-người dùng.
+Scroll animation should support content rather than fight the user's scrolling behavior.
 
-Ưu tiên: parallax nhẹ, progressive reveal, pinned storytelling khi thực sự
-cần, section transition, visual continuity.
+Prefer light parallax, progressive reveal, pinned storytelling when genuinely necessary, section transitions, and visual continuity.
 
-Tránh: can thiệp quá mức vào scroll, animation khiến nội dung khó đọc, pinned
-section quá dài, animation cản trở navigation. Người dùng phải luôn cảm thấy
-mình kiểm soát việc scroll.
+Avoid excessive scroll intervention, animations that make content difficult to read, excessively long pinned sections, or animation that obstructs navigation. Users should always feel in control of scrolling.
 
-## 10. Tiết chế về mặt thị giác
+## 10. Visual restraint
 
-Nhiều animation hơn **không** đồng nghĩa với animation tốt hơn.
+More animation does **not** mean better animation.
 
-Tránh: bounce không cần thiết, rotation/scale quá mức, chuyển động liên tục,
-animate mọi element, nhiều focal point cạnh tranh nhau, decorative motion gây
-mất tập trung.
+Avoid unnecessary bounce, excessive rotation/scale, continuous movement, animating every element, competing focal points, and distracting decorative motion.
 
-Một giao diện được thiết kế tốt thường dùng **ít** motion hơn giao diện
-amateur. Ưu tiên **một chuyển động mạnh và có chủ đích** thay vì mười chuyển
-động không liên quan.
+A well-designed interface usually uses **less** motion than an amateur interface. Prefer **one strong, intentional movement** over ten unrelated movements.
 
-Điều này áp dụng cả cho stagger (đừng dùng cùng một giá trị cho mọi trường
-hợp) và cho pattern lặp lại như "fade in + translateY + delay" áp cho mọi
-component một cách máy móc.
+This also applies to stagger (do not use the same value everywhere) and repetitive patterns such as `fade in + translateY + delay` applied mechanically to every component.
 
-## 11. Rhythm của animation
+## 11. Animation rhythm
 
-Xem xét: anticipation, acceleration, deceleration, pause, overlap, repetition,
-contrast. Không phải animation nào cũng cần bắt đầu/kết thúc độc lập — overlap
-giữa các sequence có thể tạo rhythm tự nhiên hơn. Tránh làm mọi animation
-đồng bộ hoàn toàn.
+Consider anticipation, acceleration, deceleration, pause, overlap, repetition, and contrast. Not every animation needs to start and end independently; overlap between sequences can create more natural rhythm. Avoid making every animation fully synchronized.
 
 ---
 
-## Nguyên tắc cốt lõi
+## Core principle
 
-Đừng hỏi:
+Do not ask:
 
-> "Làm thế nào để animate element này?"
+> "How should I animate this element?"
 
-Hãy hỏi:
+Ask:
 
-> "Khi state này thay đổi, người dùng cần hiểu hoặc cảm nhận điều gì?"
+> "When this state changes, what does the user need to understand or feel?"
 
-Sau đó chọn chuyển động đơn giản nhất có thể truyền tải chính xác ý định đó.
+Then choose the simplest motion that communicates that intent accurately.
 
-**Animation thành công khi người dùng cảm nhận được trải nghiệm, thay vì
-nhận ra implementation phía sau nó.**
+**Animation succeeds when users perceive the experience rather than the implementation behind it.**
