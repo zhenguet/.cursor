@@ -25,6 +25,7 @@ function Assert-PathExists {
   'prompts/backend-node.md'
   'prompts/reference-crosscheck.md'
   'prompts/review-output-baseline.md'
+  'prompts/security-baseline.md'
   'prompts/testing.md'
   'prompts/project-init.md'
   'prompts/project-init-fe.md'
@@ -130,6 +131,7 @@ $sizeLimits = @{
   'prompts/frontend.md' = 8000
   'prompts/backend.md' = 8000
   'prompts/backend-node.md' = 8000
+  'prompts/security-baseline.md' = 8000
   'prompts/project-init.md' = 5000
   'prompts/project-init-fe.md' = 5000
   'prompts/project-init-be.md' = 6000
@@ -152,6 +154,7 @@ foreach ($entry in $sizeLimits.GetEnumerator()) {
 $ownershipChecks = @(
   @('prompts/review-output-baseline.md', 'severity|finding bar|invariant falsification')
   @('prompts/reference-crosscheck.md', 'Implementation Risk Contract|counterexamples|verification mapping')
+  @('prompts/security-baseline.md', 'authentication|authorization|security verification')
   @('prompts/ui-design-to-code.md', 'Design Contract|ui-design-validator|frontend.md')
   @('prompts/project-init-split.md', 'orchestration workflow|child workflows|API contract')
 )
