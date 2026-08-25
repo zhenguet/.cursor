@@ -63,6 +63,18 @@ Explicitly challenge:
 - unsafe file handling
 - secrets exposed through source maps, bundles, environment variables, or logs
 
+## Security skill routing
+
+Load specialized security skills when their task signal applies. Do not load all security skills by default.
+
+- `trailofbits-sharp-edges` — security-sensitive client/API configuration, authentication/session interfaces, dangerous defaults, and fail-open behavior.
+- `trailofbits-variant-analysis` — after a confirmed frontend security defect or reusable bad pattern, search for equivalent instances across the codebase.
+- `anthropic-devsecops-security-scanning` — frontend CI/CD security gates, secrets scanning, dependency/SAST scanning, or DAST setup.
+- `anthropic-malicious-npm-package-triage` — when vetting or investigating npm dependencies for supply-chain compromise.
+- `anthropic-opa-policy-as-code` — only when frontend deployment/infrastructure is governed by OPA/Gatekeeper policies.
+
+These skills supplement `security-baseline.md`; they do not override `.cursor/AGENTS.md`, product requirements, or repository policy.
+
 ## API boundary
 
 When FE-facing behavior is required:
@@ -130,6 +142,7 @@ Routing:
 Authentication/session:
 Authorization/permissions:
 Security controls:
+Security skills loaded:
 UI foundation:
 Testing:
 Verification:
