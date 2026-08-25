@@ -84,6 +84,7 @@ Read this file first, then select the narrowest primary workflow.
 | Task | Primary prompt / workflow |
 |---|---|
 | Standard or High implementation/planning | `reference-crosscheck.md` + domain prompt |
+| Security-sensitive implementation/review/planning | `security-baseline.md` + domain prompt; add a specialized security skill when its trigger matches |
 | Backend Java/Spring/GraphQL | `backend.md` |
 | Backend Node/Express/Prisma | `backend-node.md` |
 | Frontend React/Next/TypeScript | `frontend.md` |
@@ -132,15 +133,16 @@ Do not auto-load these skills merely because they exist. Load them only when the
 Routing rules:
 
 1. `reference-crosscheck.md` is required for Standard/High unless its documented evidence-sufficient waiver applies.
-2. Select the backend prompt by actual stack; do not mix Java and Node conventions.
-3. Select one primary workflow. Load a secondary prompt only when its trigger matches the actual change.
-4. Hard cap: at most **3 prompt/workflow files** besides this file for a normal task. Skills do not count toward this prompt cap, but only directly triggered skills may be loaded.
-5. `cross-repo-changes.md` and animation prompts are lightweight overlays and do not count toward the prompt cap.
-6. `project-init-split.md` is the primary orchestrator. It may load `project-init-contract.md` as a dependency and `project-init-fe.md` / `project-init-be.md` as child workflows only when those applications are actually being initialized in the current run.
-7. Review path selection: staged diff → `staged-review.md`; branch/PR review → `code-review`; spec audit → `frontend-spec-review-workflow.md`. Do not run multiple review paths unless requested.
-8. `review-output-baseline.md` owns finding bar, severity, output order, and invariant falsification. Specialized review prompts must not duplicate those output rules.
-9. Deployment and credential-setup skills require explicit user request.
-10. Git writes (`commit`, `push`, PR creation/update, history rewrite, branch/ref movement) require explicit current-turn request.
+2. Security-sensitive work MUST additionally load `security-baseline.md` before implementation/review conclusions are finalized.
+3. Select the backend prompt by actual stack; do not mix Java and Node conventions.
+4. Select one primary workflow. Load a secondary prompt only when its trigger matches the actual change.
+5. Hard cap: at most **3 prompt/workflow files** besides this file for a normal task. Skills do not count toward this prompt cap, but only directly triggered skills may be loaded.
+6. `cross-repo-changes.md` and animation prompts are lightweight overlays and do not count toward the prompt cap.
+7. `project-init-split.md` is the primary orchestrator. It may load `project-init-contract.md` as a dependency and `project-init-fe.md` / `project-init-be.md` as child workflows only when those applications are actually being initialized in the current run.
+8. Review path selection: staged diff → `staged-review.md`; branch/PR review → `code-review`; spec audit → `frontend-spec-review-workflow.md`. Do not run multiple review paths unless requested.
+9. `review-output-baseline.md` owns finding bar, severity, output order, and invariant falsification. Specialized review prompts must not duplicate those output rules.
+10. Deployment and credential-setup skills require explicit user request.
+11. Git writes (`commit`, `push`, PR creation/update, history rewrite, branch/ref movement) require explicit current-turn request.
 
 ## Skill routing
 
@@ -148,6 +150,12 @@ Load only the skills directly triggered by the selected workflow.
 
 | Task signal | Skill |
 |---|---|
+| Security-sensitive implementation/review | `security-baseline` |
+| Security-sensitive API/configuration design | `trailofbits-sharp-edges` |
+| Confirmed vulnerability or reusable bad pattern; search for equivalent instances | `trailofbits-variant-analysis` |
+| CI/CD security gates, secrets/SAST/SCA/container/IaC/DAST | `anthropic-devsecops-security-scanning` |
+| Suspicious or newly vetted npm dependency | `anthropic-malicious-npm-package-triage` |
+| OPA/Gatekeeper policy enforcement | `anthropic-opa-policy-as-code` |
 | Frontend implementation/review | Select through `frontend-vercel-skills.md` |
 | Screenshot/Figma/mockup implementation | `ui-design-to-code` + `ui-design-validator` |
 | UI user action/mutation/async interaction | `ui-interaction-contract` |
@@ -175,6 +183,9 @@ AGENTS.md
 
 domain prompt
 = stack-specific conventions + task entry context
+
+security-baseline.md
+= shared application-security policy and verification baseline
 
 specialized skill
 = deep validation or domain capability
@@ -327,140 +338,23 @@ Do not prescribe a fixed failure-scenario count in the kernel. For Standard/High
 
 Use this decision order:
 
-1. **Fallback available** → use it; do not stop.
-2. **Evidence unavailable but not safety-critical** → continue with `Unknown` + residual risk.
-3. **Required evidence is safety-critical and no reliable fallback exists** → stop and ask one focused question.
+1. **Required evidence missing** → stop and report `UNKNOWN`.
+2. **Required behavior/spec is contradictory** → stop and ask for clarification.
+3. **Implementation would expand scope** → stop and ask before widening it.
+4. **Required tool/capability unavailable** → use documented fallback; otherwise report `UNKNOWN`.
+5. **Security-sensitive action lacks an explicit security/control decision** → do not invent it; record `UNKNOWN` and stop when the decision is material.
+6. **Verification cannot establish required invariants** → report residual risk; do not claim PASS.
 
-Stop and ask one question when:
+Do not continue with speculative implementation after a material stop condition.
 
-- required behavior is materially unresolved
-- two interpretations produce materially different behavior
-- scope expands beyond approval
-- an unapproved public-contract change is required
-- a destructive action needs confirmation
-- a High-risk root cause remains unverified and no safe fallback exists
-- required production/data evidence is safety-critical and inaccessible
+## Definition of done
 
-Do not stop merely because a graph tool, peer, browser MCP, or spec is missing when the behavior can be established safely by another method.
+Work is complete only when:
 
-## Change rules
-
-1. **MUST** change only what the request requires.
-2. **MUST** read the full target and direct execution flow before editing only for Standard/High or when Quick/Trivial evidence shows broader impact; for Trivial/Quick follow the target-read policy above.
-3. **SHOULD** reuse existing abstractions before adding new ones.
-4. **MUST** preserve public APIs and observable behavior unless explicitly changed.
-5. **SHOULD** add defensive logic only with requirement or repository evidence.
-6. **MUST** match trust-boundary input/output schemas exactly.
-7. **MUST** follow target-language type-safety conventions and avoid untyped escape hatches.
-8. **SHOULD** keep comments short and intent-focused.
-9. **MUST NOT** weaken authentication, authorization, validation, or error handling.
-10. **MUST** stop if impact exceeds approved scope.
-11. **SHOULD** use repository logging/telemetry utilities and remove ad-hoc debug prints before finishing unless repository convention keeps them.
-12. **SHOULD** verify existing dependencies before adding a new dependency and match current package-manager/version conventions.
-
-## Decision priority
-
-Use this order when sources conflict:
-
-1. Explicit current-turn user instruction
-2. Approved task/spec acceptance criteria
-3. Existing public/API/schema contract
-4. Repository/module conventions
-5. Actual execution or runtime/data evidence
-6. Same-module peers
-7. Repository documentation
-8. Workspace prompts/skills
-9. External best practices
-
-A user preference does not override an existing public contract or safety constraint unless the user explicitly requests the contract change and the risk/approval gate allows it.
-
-## Performance
-
-Keep the kernel methodology-level:
-
-- For hot paths, check whether avoidable work, duplicate requests, fetch waterfalls, N+1/query loops, or semantic regressions were introduced.
-- For dedicated performance work: **baseline → identify measured bottleneck → change one relevant variable → measure again → compare**.
-- Never label a suspected bottleneck as confirmed without measurement.
-
-Domain-specific performance rules belong in the relevant FE/BE skill or prompt, not here.
-
-## Verification
-
-| Risk / surface | Minimum verification |
-|---|---|
-| Prompt/config/routing | Syntax + reference/route check |
-| UI/runtime | Lint + typecheck + runtime evidence when behavior/visuals change |
-| UI Design Contract | `scripts/ui/validate-design-contract.ps1` when a contract + observed evidence exist, then visual/runtime verification |
-| FE/BE Cross-Layer Contract | `scripts/cross-layer/validate-contract.ps1` when a contract + observed evidence exist |
-| Backend State Contract | `scripts/backend/validate-state-contract.ps1` when a contract + observed evidence exist |
-| Animation | Lint + typecheck + animation checklist + runtime preview when available |
-| Business logic | Targeted tests |
-| API/schema | Contract validator or targeted test |
-| DB | Integration/query verification |
-| Transaction | Transaction/integration test |
-| Performance | Before/after measurement |
-| Concurrency | Reproduction/concurrency check |
-| Security | Auth/access test |
-| Migration | Migration + compatibility check |
-
-Machine validators are authoritative for the contract dimensions they cover. A visual or subjective review **MUST NOT** override a structural validator `FAIL`.
-
-After every edit:
-
-1. Re-read changed files.
-2. Confirm changed lines map to the request.
-3. Check references, formatting, and side effects.
-4. Run risk-matched verification.
-
-If a check cannot run, report the exact reason and residual risk.
-
-Final reports after edits must include:
-
-```text
-### Verification
-- Risk level: ...
-- Surfaces: ...
-### Commands run
-- `command`
-### Results
-- `command`: pass | fail
-### Skipped checks
-- None | reason + residual risk
-```
-
-Standard/High reports must also close every planned failure scenario: handled, tested, or accepted as explicit residual risk.
-
-## Recovery
-
-If verification reveals an unrelated regression:
-
-1. Revert the offending edit before continuing.
-2. Re-diagnose from the reverted state.
-3. Leave the repository fully reverted or fully applied; never leave application code half-migrated.
-
-For schema/data changes, **do not assume source rollback reverses database state**. Use repository migration/data rollback or forward-fix procedures appropriate to the environment.
-
-## Output baseline
-
-Standard/High before implementation:
-
-```text
-### Understanding
-...
-### Evidence
-...
-### Risk
-Trivial | Quick | Standard | High
-### Plan
-...
-### Implementation Risk Contract
-- Invariants: ...
-- Counterexamples: ...
-- State transitions: ... | N/A
-- Boundary/data impact: ... | N/A
-- Verification mapping: ...
-### Failure scenarios
-- scenario → expected behavior
-### Impact
-...
-```
+- Scope is satisfied.
+- Required evidence is read.
+- No required invariant is `FAIL`.
+- Required verification passes, or explicit limitations are reported as `UNKNOWN`.
+- Final diff is limited to intended files/behavior.
+- Security-sensitive work has an explicit baseline result when applicable.
+- Git writes follow the explicit-current-turn rule.
