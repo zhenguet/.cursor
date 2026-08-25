@@ -13,9 +13,10 @@
         "name": { "type": "string", "minLength": 1 },
         "kind": { "enum": ["REST", "GraphQL", "event", "file", "other"] },
         "method": { "type": ["string", "null"] },
-        "route": { "type": ["string", "null"] }
+        "route": { "type": ["string", "null"] },
+        "metadata": { "type": "object" }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "request": { "$ref": "#/$defs/message" },
     "response": { "$ref": "#/$defs/message" },
@@ -27,27 +28,34 @@
         "properties": {
           "code": { "type": "string", "minLength": 1 },
           "httpStatus": { "type": ["integer", "null"], "minimum": 100, "maximum": 599 },
-          "retryable": { "type": ["boolean", "null"] }
+          "retryable": { "type": ["boolean", "null"] },
+          "messagePolicy": { "type": ["string", "null"] },
+          "metadata": { "type": "object" }
         },
-        "additionalProperties": true
-      }
+        "additionalProperties": false
+      },
+      "uniqueItems": false
     },
     "authorization": {
       "type": "object",
       "properties": {
         "required": { "type": "boolean" },
-        "roles": { "type": "array", "items": { "type": "string" } }
+        "roles": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "permissions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "resource": { "type": ["string", "null"] },
+        "action": { "type": ["string", "null"] }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "stateTransition": {
       "type": "object",
       "properties": {
         "current": { "type": ["string", "null"] },
         "action": { "type": ["string", "null"] },
-        "next": { "type": ["string", "null"] }
+        "next": { "type": ["string", "null"] },
+        "idempotent": { "type": ["boolean", "null"] }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "asyncEffects": {
       "type": "array",
@@ -57,13 +65,16 @@
         "properties": {
           "name": { "type": "string", "minLength": 1 },
           "timing": { "enum": ["beforeCommit", "afterCommit", "async", "none"] },
-          "retryable": { "type": "boolean" },
-          "idempotent": { "type": "boolean" }
+          "retryable": { "type": ["boolean", "null"] },
+          "idempotent": { "type": ["boolean", "null"] },
+          "metadata": { "type": "object" }
         },
-        "additionalProperties": true
+        "additionalProperties": false
       }
-    }
+    },
+    "metadata": { "type": "object" }
   },
+  "additionalProperties": false,
   "$defs": {
     "message": {
       "type": "object",
@@ -79,14 +90,15 @@
               "type": { "type": "string", "minLength": 1 },
               "nullable": { "type": "boolean" },
               "required": { "type": "boolean" },
-              "enum": { "type": "array", "items": { "type": "string" } }
+              "enum": { "type": "array", "items": { "type": "string" } },
+              "metadata": { "type": "object" }
             },
-            "additionalProperties": true
+            "additionalProperties": false
           }
-        }
+        },
+        "metadata": { "type": "object" }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     }
-  },
-  "additionalProperties": true
+  }
 }
