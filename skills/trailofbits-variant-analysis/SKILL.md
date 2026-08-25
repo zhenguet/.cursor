@@ -7,12 +7,13 @@ description: >-
   remaining elsewhere. Adapted from Trail of Bits variant-analysis.
 source: https://github.com/trailofbits/skills/tree/main/plugins/variant-analysis
 source-license: CC-BY-SA-4.0
+license: CC-BY-SA-4.0
+adaptation: Condensed adaptation for this workspace; not an unmodified upstream copy.
 ---
 
 # Variant Analysis
 
-Use this skill after a concrete defect is known. The goal is to generalize the
-root cause rather than add another one-off bug example to workspace prompts.
+Use this skill after a concrete defect is known. The goal is to generalize the root cause rather than add another one-off bug example to workspace prompts.
 
 ## When to Use
 
@@ -32,15 +33,7 @@ root cause rather than add another one-off bug example to workspace prompts.
 
 ### 1. Extract the root cause
 
-Describe why the original code is wrong, not merely what value or file triggered it.
-Identify:
-
-- violated invariant
-- trust boundary
-- unsafe assumption
-- input/state pattern
-- missing validation or authorization
-- concurrency or lifecycle condition
+Describe why the original code is wrong, not merely what value or file triggered it. Identify the violated invariant, trust boundary, unsafe assumption, input/state pattern, missing validation or authorization, and concurrency/lifecycle condition.
 
 ### 2. Create an exact match
 
@@ -50,24 +43,11 @@ Build the narrowest search that matches the known instance. Confirm that it find
 
 Change one element of the pattern per iteration. Review every match after each change. Stop when noise dominates the result set.
 
-Useful dimensions include:
-
-- alternate identifiers
-- equivalent API calls
-- different data types
-- different lifecycle states
-- equivalent validation omissions
-- alternate callers or resource boundaries
+Useful dimensions include alternate identifiers, equivalent API calls, different data types, different lifecycle states, equivalent validation omissions, and alternate callers/resource boundaries.
 
 ### 4. Triage candidates
 
-Classify each candidate as:
-
-- confirmed variant
-- false positive
-- requires additional evidence
-
-Do not convert similarity into a finding without evidence.
+Classify each candidate as `confirmed variant`, `false positive`, or `requires additional evidence`. Do not convert similarity into a finding without evidence.
 
 ### 5. Prevent recurrence
 
