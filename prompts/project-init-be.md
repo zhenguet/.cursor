@@ -6,39 +6,39 @@ Use when initializing a new backend application or extracting BE as an independe
 
 ## Ownership
 
-Own only **backend architecture, runtime, security, and operational setup**.
+Own only **backend architecture, runtime, setup, and backend-specific security decisions**.
 
-`project-init-contract.md` owns FE↔BE API contract details. Do not redefine request/response field rules here.
+- `project-init-contract.md` owns FE↔BE API contract semantics.
+- `security-baseline.md` owns shared authentication, authorization, secrets, API, data, and application-security policy.
+- Backend domain prompts and validation skills own stack-specific implementation details.
+
+Do not duplicate canonical rules owned elsewhere.
 
 ## Required setup
 
 - Identify language/runtime/framework and build/dependency tooling.
-- Define API style/versioning and authentication/authorization boundaries.
+- Define API style/versioning and authentication/authorization integration points.
 - Define domain/application/service/repository responsibilities for the selected stack.
 - Define persistence technology, migrations, transaction ownership, connection configuration, and data-access boundaries.
 - Define validation/error-handling architecture and observability without sensitive data.
 - Define async/queue/job boundaries, idempotency, retry behavior, and health/readiness checks when applicable.
 - Define tests and executable verification commands.
-- Load `security-baseline.md` and verify all applicable security controls before implementation is considered complete.
 
-## Security and authorization
+## Security boundary
 
-`security-baseline.md` is the canonical shared security baseline. Apply it; do not duplicate its full policy here.
+Load `security-baseline.md` before making security-sensitive decisions or declaring initialization complete.
 
-Before implementation, explicitly resolve:
+Resolve only backend-specific decisions it leaves open:
 
 - authentication mechanism and trust boundary
-- session/token lifecycle and revocation where applicable
-- authorization model: roles, permissions, ownership, tenant boundaries, or other policy
+- authorization enforcement location
+- roles/permissions/ownership/tenant mapping
 - protected resources and privileged operations
-- enforcement point for every sensitive operation
-- deny-by-default behavior
-- `401` vs `403` semantics where applicable
-- service-to-service credentials and least privilege
-- secret storage and environment boundaries
-- audit/security logging and redaction
+- service-to-service credential scope and secret source
+- security event/audit logging required by the application
+- security behavior of external integrations
 
-For every protected operation, record:
+For protected operations, record:
 
 ```text
 Actor → Resource → Action → Authorization decision → Enforcement point
@@ -46,32 +46,7 @@ Actor → Resource → Action → Authorization decision → Enforcement point
 
 Never rely on frontend checks or client-provided role/user/permission fields for authorization.
 
-Explicitly challenge:
-
-- unauthenticated access
-- IDOR/BOLA
-- horizontal privilege escalation
-- vertical privilege escalation
-- cross-tenant access
-- mass assignment/over-posting
-- injection and unsafe deserialization
-- path traversal / SSRF where applicable
-- unsafe file upload/download
-- webhook forgery/replay
-- rate-limit/resource-exhaustion paths
-- sensitive information disclosure through errors, logs, or health endpoints
-
-## Security skill routing
-
-Load specialized security skills when their task signal applies. Do not load all security skills by default.
-
-- `trailofbits-sharp-edges` — security-sensitive API/configuration design, dangerous defaults, fail-open behavior, and misuse-resistant interfaces.
-- `trailofbits-variant-analysis` — immediately after a confirmed vulnerability or reusable bad pattern to search for other instances of the same root cause.
-- `anthropic-devsecops-security-scanning` — CI/CD security gates, secrets scanning, SAST/SCA, container/IaC scanning, or DAST setup.
-- `anthropic-opa-policy-as-code` — Kubernetes, infrastructure, or CI/CD policy-as-code enforcement with OPA/Gatekeeper.
-- `anthropic-malicious-npm-package-triage` — only when the backend uses npm packages and a dependency is being vetted or investigated for supply-chain compromise.
-
-These skills supplement `security-baseline.md`; they do not override `.cursor/AGENTS.md`, product requirements, or repository policy.
+Load a specialized security skill only when its trigger matches the current task. Use `security-baseline.md` for the shared verification contract.
 
 ## API boundary
 
@@ -142,8 +117,7 @@ Initialization is complete only when applicable checks pass and no required secu
 Runtime:
 Framework:
 API boundary:
-Authentication:
-Authorization:
+Authentication/authorization:
 Security controls:
 Security skills loaded:
 Domain structure:
