@@ -7,7 +7,7 @@ $WorkspaceRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $GraphJson = Join-Path $WorkspaceRoot "graphify-out\graph.json"
 
 if (-not (Test-Path $GraphJson)) {
-    Write-Error "No graph at $GraphJson. Run once from workspace root: graphify ."
+    Write-Error "No graph at $GraphJson. Run once from workspace root: graphify . --code-only"
 }
 
 Set-Location $WorkspaceRoot
