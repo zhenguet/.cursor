@@ -56,15 +56,15 @@ If `spec` is missing: continue with requirement only and mark assumptions.
 
 ## EVIDENCE GATE (MUST COMPLETE)
 
-When the target repository is registered and graph coverage exists, collect:
+When `graphify-out/graph.json` exists at the workspace root, collect:
 
-1. `detect_changes_tool` for risk-scored changed nodes.
-2. `get_review_context_tool` for high-risk snippets.
-3. `get_affected_flows_tool` for behavioral blast paths.
-4. `get_impact_radius_tool` for shared/public ripple effects.
-5. `query_graph_tool` with `tests_for` for current coverage.
+1. `graphify query` scoped to changed modules/symbols (or MCP `query_graph`).
+2. MCP `god_nodes` or `graphify-out/GRAPH_REPORT.md` for high-coupling hubs in the diff.
+3. MCP `shortest_path` / `get_neighbors` for behavioral blast paths between changed and dependent symbols.
+4. MCP `query_graph` or `graphify query` for shared/public ripple effects around changed symbols.
+5. Targeted test file reads for coverage on impacted paths (graphify does not expose a dedicated `tests_for` tool).
 
-If the repository is not registered or graph coverage is insufficient, use the staged/provided diff plus targeted source, caller, consumer, and test reads for the same evidence goals.
+If the graph is missing or insufficient, use the staged/provided diff plus targeted source, caller, consumer, and test reads for the same evidence goals.
 
 In all cases, run verification checks (lint/type/test/build) relevant to diff risk.
 

@@ -288,7 +288,7 @@ Decision summary
 
 Prefer targeted symbol/file reads, direct callers/consumers, triggered skills, and decision-relevant evidence.
 
-For graph-enabled repositories, use the code-review graph first for discovery/impact/test coverage when the task touches shared, public, behavior-changing, or High-risk code. For Trivial/Quick local work, targeted search/read is preferred unless graph evidence is needed to resolve impact.
+For graph-enabled repositories (`graphify-out/graph.json` at workspace root), use graphify first (`graphify query`, `graphify path`, MCP `query_graph`, `god_nodes`, `shortest_path`) for discovery/impact when the task touches shared, public, behavior-changing, or High-risk code. For Trivial/Quick local work, targeted search/read is preferred unless graph evidence is needed to resolve impact. After code changes, run `graphify update .` (AST-only) to refresh the graph.
 
 When runtime/data evidence matters, use the appropriate browser/database MCP. If evidence cannot be collected, use the documented fallback; if no reliable fallback exists, mark the conclusion `Unknown` and state residual risk.
 

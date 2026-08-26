@@ -16,7 +16,7 @@ After reading `.cursor/AGENTS.md`, follow its **PROMPT ROUTING** section: choose
 - Keep workspace prompts, rules, and skills in **English**.
 - Classify risk first (Trivial / Quick / Standard / High) and match workflow depth to risk.
 - **Plan-first gate:** for Standard and High work, present a plan and wait for user `OK` before writing code (see AGENTS.md for Quick/Trivial exemptions).
-- Prefer code-review-graph MCP tools for discovery when graph coverage is available; otherwise use the documented targeted-search/read fallback.
+- Prefer graphify (`graphify query` / MCP `query_graph`, `god_nodes`, `shortest_path`) when `graphify-out/graph.json` exists; otherwise use the documented targeted-search/read fallback.
 - Load minimum context for the next decision; do not bulk-read skills or routing-chain files without a trigger.
 
 ## If AGENTS.md was already read this session

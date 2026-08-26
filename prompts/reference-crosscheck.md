@@ -51,13 +51,13 @@ Read when relevant:
 
 ### 3. Structural discovery
 
-When the repository is graph-indexed:
+When `graphify-out/graph.json` exists at the workspace root:
 
-1. Use `semantic_search_nodes_tool` for feature, route, operation, class, or symbol names.
-2. Use `query_graph_tool` for callers, callees, importers, and tests.
-3. Use `get_impact_radius_tool` for shared or public changes.
+1. Use `graphify query "<feature or symbol>"` or MCP `query_graph` for feature, route, operation, class, or symbol discovery.
+2. Use `graphify path "<A>" "<B>"` or MCP `get_neighbors` / `shortest_path` for callers, callees, and dependency paths.
+3. Use MCP `god_nodes` or `graphify query` with blast-radius intent for shared or public changes.
 
-Use targeted file search only for missing graph coverage, documentation, configuration, or non-code assets.
+Use targeted file search when the graph is missing, stale, or does not cover documentation, configuration, or non-code assets.
 
 ### 4. Peer selection
 

@@ -44,7 +44,7 @@ Read only what is needed:
 3. Shared fixtures/helpers/base classes actually used by those peers.
 4. Existing coverage for the failure/contract path.
 
-Use graph coverage or `tests_for` when available for impacted shared/public behavior.
+Use graphify (`graphify query` or MCP `query_graph`) when available for impacted shared/public behavior; otherwise read tests that cover the changed execution path directly.
 
 ## Test design
 
