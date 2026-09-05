@@ -70,18 +70,33 @@ Get-ChildItem -LiteralPath $promptPath -Filter '*.md' -File | ForEach-Object {
   }
 }
 
-# Prompt references must point to existing prompt files when they use an explicit .md reference.
+# Prompt references must resolve as prompt-local references; generic context and external-file references are not prompt references.
+$nonPromptMarkdownReferences = @(
+  'AGENTS.md'
+  'SKILL.md'
+  'CONTEXT.md'
+  'CONTEXT-MAP.md'
+)
+
 Get-ChildItem -LiteralPath $promptPath -Filter '*.md' -File | ForEach-Object {
   $file = $_
   $text = Get-Content -LiteralPath $file.FullName -Raw
   $matches = [regex]::Matches($text, '`([^`\r\n]+\.md)`')
   foreach ($match in $matches) {
-    $name = $match.Groups[1].Value
-    if ($name -notmatch '[/\\]') {
+    $name = $match.Groups[1].Value.Trim()
+    if ($nonPromptMarkdownReferences -contains $name -or $name -like '*.plan.md') {
+      continue
+    }
+
+    # Paths are workspace-relative; bare filenames are prompt-directory references.
+    if ($name -match '[/\\]') {
+      $candidate = Join-Path $rootPath $name
+    } else {
       $candidate = Join-Path $promptPath $name
-      if (-not (Test-Path -LiteralPath $candidate)) {
-        $errors.Add("Broken prompt reference in $($file.Name): $name")
-      }
+    }
+
+    if (-not (Test-Path -LiteralPath $candidate)) {
+      $errors.Add("Broken prompt reference in $($file.Name): $name")
     }
   }
 }
