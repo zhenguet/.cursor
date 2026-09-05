@@ -249,13 +249,47 @@ A task may escalate its read depth when evidence reveals broader impact. Escalat
 
 These are **targets, not hard token limits**. Load more only when the task cannot be decided safely with the smaller context.
 
+### Context lifecycle
+
+Optimize context across the **entire task**, not only at individual read points.
+
+#### Reuse and retention
+
+- Reuse information already available in the current task; do not reload it solely to regain familiarity.
+- Prefer retaining concise decisions, constraints, invariants, file/symbol references, risks, and unknowns over raw tool output, logs, exploratory alternatives, or full prompt text.
+- Once a phase is verified and its exploratory details no longer affect the next decision, treat those details as disposable unless they are required for audit or reproducibility.
+
+#### Compression checkpoint
+
+At a logical milestone, or when the active context contains substantial superseded or exploratory material:
+
+1. Identify the information still required for the next decision.
+2. Update the existing `Decision summary` with those facts.
+3. Compact or clear obsolete context using the runtime's supported mechanism when available.
+4. Continue from the summary and load only evidence that is still missing.
+
+Do not add a second history or summary artifact merely to record discarded context.
+
+#### Clear vs compress
+
+- **Compress** when prior decisions, constraints, invariants, risks, or unresolved questions still matter to the next phase.
+- **Clear** when most accumulated exploration is no longer needed and the repository state plus the `Decision summary` can reconstruct the next phase safely.
+- After clearing, do not reload the full previous conversation, prompt text, or tool output merely to restore familiarity.
+
+#### Context bloat signals
+
+Treat repeated large reads, repeated prompt/skill loads, long raw tool outputs carried across phases, or substantial stale exploration as signals to compact context.
+
+Cache-read or similar runtime metrics MAY be used as diagnostic signals, but they do not by themselves prove that context is wasteful. Diagnose the underlying repeated or stale context before changing workflow behavior.
+
 ### Context handoff
 
 When moving from planning to implementation or from implementation to validation:
 
-- Carry forward the **decision summary**, not the entire prompt text.
+- Carry forward the **decision summary**, not the entire prompt text or prior phase history.
+- The decision summary is the default handoff artifact between phases.
 - Summarize only: requirements, constraints, files/symbols, assumptions, selected skills, risks, and unresolved questions.
-- Do not restate large policy sections already loaded.
+- Do not restate large policy sections already loaded or carry raw tool output when a concise summary is sufficient.
 
 Recommended handoff:
 
