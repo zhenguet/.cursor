@@ -70,7 +70,8 @@ Get-ChildItem -LiteralPath $promptPath -Filter '*.md' -File | ForEach-Object {
   }
 }
 
-# Prompt references must resolve as prompt-local references; generic context and external-file references are not prompt references.
+# Validate references to prompts owned by this repository. References to the target
+# workspace, skills, generated reports, and context files belong to other validators.
 $nonPromptMarkdownReferences = @(
   'AGENTS.md'
   'SKILL.md'
@@ -84,7 +85,16 @@ Get-ChildItem -LiteralPath $promptPath -Filter '*.md' -File | ForEach-Object {
   $matches = [regex]::Matches($text, '`([^`\r\n]+\.md)`')
   foreach ($match in $matches) {
     $name = $match.Groups[1].Value.Trim()
-    if ($nonPromptMarkdownReferences -contains $name -or $name -like '*.plan.md') {
+
+    if (
+      $nonPromptMarkdownReferences -contains $name -or
+      $name -like '*.plan.md' -or
+      $name -like '@.cursor/*' -or
+      $name -like '.cursor/*' -or
+      $name -like 'graphify-out/*' -or
+      $name -like '*/SKILL.md' -or
+      $name -like '*/*SKILL.md'
+    ) {
       continue
     }
 
