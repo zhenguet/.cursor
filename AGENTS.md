@@ -322,7 +322,7 @@ Decision summary
 
 Prefer targeted symbol/file reads, direct callers/consumers, triggered skills, and decision-relevant evidence.
 
-For graph-enabled repositories (`graphify-out/graph.json` at workspace root), use graphify first (`graphify query`, `graphify path`, MCP `query_graph`, `god_nodes`, `shortest_path`) for discovery/impact when the task touches shared, public, behavior-changing, or High-risk code. For Trivial/Quick local work, targeted search/read is preferred unless graph evidence is needed to resolve impact. After code changes, run `graphify update .` (AST-only) to refresh the graph.
+For graph-enabled repositories (`graphify-out/graph.json` at workspace root), use graphify first (`graphify query`, `graphify path`, MCP `query_graph`, `god_nodes`, `shortest_path`) for discovery/impact when the task touches shared, public, behavior-changing, or High-risk code. **MUST** run every graphify CLI command with working directory = TMV workspace root only; **MUST NOT** run graphify from child directories. For Trivial/Quick local work, targeted search/read is preferred unless graph evidence is needed to resolve impact. After code changes, refresh from workspace root only: prefer `./.cursor/scripts/graphify-quick-update.ps1`; or `graphify update .` with Shell `working_directory` set to the TMV workspace root (AST-only).
 
 When runtime/data evidence matters, use the appropriate browser/database MCP. If evidence cannot be collected, use the documented fallback; if no reliable fallback exists, mark the conclusion `Unknown` and state residual risk.
 

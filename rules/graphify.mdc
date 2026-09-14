@@ -3,9 +3,13 @@ description: graphify knowledge graph context
 alwaysApply: true
 ---
 
-This project has a graphify knowledge graph at graphify-out/.
+This workspace has a single graphify knowledge graph at the TMV workspace root: `graphify-out/` (`graphify-out/graph.json`).
 
-**MANDATORY: Before using Read, Grep, Glob, or Bash to explore the codebase, you MUST run graphify first:**
+**MUST** run every graphify CLI command (`query`, `path`, `explain`, `update`, full rebuild) with working directory = TMV workspace root only.
+
+**MUST NOT** run graphify from any child directory (e.g. `tmv-hrm`, `tmv-hrm-be`, `tmv-hrm-scripts`). Do not create or refresh `graphify-out/` outside the workspace root.
+
+**MANDATORY: Before using Read, Grep, Glob, or Bash to explore the codebase, you MUST run graphify first from workspace root:**
 - `graphify query "<question>"` — scoped subgraph for any codebase or architecture question
 - `graphify path "<A>" "<B>"` — dependency path between two symbols
 - `graphify explain "<concept>"` — all nodes related to a concept
@@ -14,8 +18,8 @@ This applies to YOU and to every subagent you spawn. Include this rule explicitl
 
 Only use Read/Grep/Glob directly when:
 1. graphify has already oriented you and you need to modify or debug specific lines
-2. `graphify-out/graph.json` does not exist yet
+2. `graphify-out/graph.json` does not exist yet at workspace root
 
 - If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files
 - Read `graphify-out/GRAPH_REPORT.md` only for broad architecture review when query/path/explain do not surface enough context
-- After modifying code files, run `graphify update .` to keep the graph current (AST-only, no API cost)
+- After modifying code files, refresh from workspace root only: prefer `./.cursor/scripts/graphify-quick-update.ps1`; or `graphify update .` with Shell `working_directory` set to the TMV workspace root (AST-only, no API cost)
