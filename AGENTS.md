@@ -88,7 +88,7 @@ Read this file first, then select the narrowest primary workflow.
 | Backend Java/Spring/GraphQL | `backend.md` |
 | Backend Node/Express/Prisma | `backend-node.md` |
 | Frontend React/Next/TypeScript | `frontend.md` |
-| UI from screenshot/Figma/mockup | `ui-design-to-code.md` + `frontend.md` |
+| UI from screenshot/Figma/mockup | `ui-design-plan.md` when planning; `ui-design-to-code.md` + `frontend.md` when implementing |
 | New project with no reliable architecture baseline | `project-init.md` router |
 | FE-only project initialization | `project-init-fe.md` |
 | BE-only project initialization | `project-init-be.md` |
@@ -151,6 +151,7 @@ Load only the skills directly triggered by the selected workflow.
 | Task signal | Skill |
 |---|---|
 | Frontend implementation/review | Select through `frontend-vercel-skills.md` |
+| Screenshot/Figma/mockup planning | `ui-design-plan` + `ui-design-validator` when a contract/evidence check is needed |
 | Screenshot/Figma/mockup implementation | `ui-design-to-code` + `ui-design-validator` |
 | UI user action/mutation/async interaction | `ui-interaction-contract` |
 | FE/API/BE boundary or server-backed mutation | `cross-layer-contract` |
