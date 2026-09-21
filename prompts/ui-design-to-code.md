@@ -28,6 +28,10 @@ Implement the provided design in the existing frontend codebase.
 
 Treat the design reference as the authoritative source for observable UI requirements. Do not rely on memory, generic UI conventions, or subjective visual similarity when the reference provides concrete information.
 
+## Planning gate
+
+When the user asks to plan a new UI from a screenshot/Figma/mockup, read `ui-design-plan.md` and create the required standalone `*.plan.md` artifact before implementation. The plan MUST include a row-by-row layout specification and a Markdown/ASCII wireframe derived from the reference. Do not treat a generic component checklist as a sufficient UI plan.
+
 ## Context gate
 
 Before implementation:
