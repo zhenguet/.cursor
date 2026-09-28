@@ -66,6 +66,84 @@ A late result must not overwrite the current request's authoritative state unles
 
 A finding derived from this protocol must name the invariant and the counterexample.
 
+## End-to-end flow and semantic contract review
+
+For every changed behavior that crosses a function, component, state, route, API, persistence, file, queue, or external-service boundary, verify the complete semantic flow:
+
+```
+trigger / caller
+→ handler / entry point
+→ arguments
+→ transformations / mapping / normalization
+→ destination / consumer
+→ required contract
+→ observable result / terminal behavior
+```
+
+Do not stop at type compatibility or syntactic correctness. The purpose is to detect cases where every individual step appears valid but the combined flow is wrong.
+
+### Mandatory checks
+
+1. **Required-context propagation**
+   - Identify every value the downstream operation requires to behave correctly.
+   - Verify those values originate from the correct source and survive every transformation/boundary.
+   - A destination being reachable is not sufficient if it cannot operate with the generated state.
+
+2. **Semantic identity preservation**
+   - Distinct entities, action modes, document/resource types, scopes, variants, or user intents must remain distinguishable through the flow.
+   - Challenge accidental collapse where different inputs produce the same downstream operation, request, resource, or result.
+   - If two inputs intentionally converge, verify that equivalence is explicit and safe.
+
+3. **Input consumption**
+   - Every behavior-significant argument passed into a handler, mapper, callback, route, API, or service must either affect the intended behavior or be proven intentionally irrelevant.
+   - Treat ignored, renamed-away, hard-coded, defaulted, or overwritten inputs as review targets.
+
+4. **Destination/consumer contract**
+   - Read the actual consumer, not only the caller.
+   - Verify required parameters, preconditions, state, permissions, and expected data shape at the destination.
+   - For routes/navigation, inspect what the destination actually requires.
+   - For APIs/services, inspect what the implementation actually uses, not only the schema/type.
+
+5. **Terminal behavior**
+   - A visible action must reach its advertised outcome: correct screen, mutation, file/resource, state change, or explicit supported result.
+   - A handler that only shows an error, returns early, no-ops, or reaches an unsupported path is not an implemented action unless the UI explicitly represents that state.
+   - Verify loading, success, failure, and cancellation behavior where applicable.
+
+6. **Round-trip / reversibility where applicable**
+   - For upload/download, encode/decode, create/read, serialize/deserialize, route/restore, or similar paired flows, verify that the output corresponds to the same semantic object/resource that entered the flow.
+   - Challenge cases where metadata or identity is lost between the two directions.
+
+7. **Cross-boundary cardinality and selection**
+   - Verify that the selected entity, resource, row, document, or scope remains the same after mapping/filtering/pagination/lookup.
+   - Challenge empty, multiple-match, duplicate, stale, and missing-target cases where applicable.
+
+8. **State preconditions**
+   - Verify that the downstream operation's required state is actually established before the action executes.
+   - Challenge action timing when required derived, fetched, or persisted state is incomplete or stale.
+
+### Generic counterexample families
+
+For each applicable flow, attempt at least one counterexample from the relevant classes:
+
+- required downstream value omitted
+- required value replaced by a default or stale value
+- caller passes a value that the handler ignores
+- two semantically different actions collapse into one downstream operation
+- destination receives syntactically valid but semantically incomplete state
+- UI advertises an action whose terminal operation is unavailable or unreachable
+- selected entity changes during mapping/filtering/pagination
+- paired operation acts on a different resource than the one displayed/selected
+- intermediate transformation silently drops or rewrites business-significant meaning
+- action executes before required secondary state is ready
+
+These are reusable failure classes. Do not encode feature-specific field names, ticket numbers, or one-off bug examples into the global prompt.
+
+A flow is not considered fully reviewed merely because its types compile, its handler exists, or its immediate API call succeeds.
+
+### Finding rule
+
+When a flow violates one of these checks, report the concrete broken invariant and the smallest safe fix direction. Do not report the category alone.
+
 ## Validation and parsing review
 
 Whenever a change adds or modifies a validator, parser, formatter, sanitizer, normalization rule, or user-input acceptance condition, review the **decision boundary**, not only the obvious happy path.
@@ -116,6 +194,14 @@ For validation/parser changes, include the relevant boundary/partition tests or 
 For async derived-state changes, include action-boundary timing coverage or state the missing race coverage explicitly.
 
 ## Common review checklist
+
+- [ ] High-risk changed flows were traced end-to-end from trigger/caller to terminal behavior
+- [ ] Required downstream context is propagated through every boundary
+- [ ] Semantic identity is preserved; distinct intents/resources do not collapse accidentally
+- [ ] Behavior-significant inputs are consumed or intentionally proven irrelevant
+- [ ] Destination/consumer preconditions and contracts were inspected
+- [ ] User-visible actions reach their advertised terminal behavior
+- [ ] Paired/round-trip flows preserve the same semantic resource when applicable
 
 - [ ] Findings are evidence-based and severity-ordered
 - [ ] No style-only findings without concrete negative consequence
