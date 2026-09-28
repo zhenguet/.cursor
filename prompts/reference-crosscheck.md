@@ -159,7 +159,36 @@ If the domain has an established parser/library or canonical validation rule, pr
 
 Do not create a permanent prompt/reference entry for every newly discovered concrete value. Generalize the failure into a reusable rule or scenario class; add a concrete example only when it is necessary to explain an otherwise ambiguous contract.
 
-### 4. State transitions
+### 4. End-to-end flow contract
+
+For every behavior-changing flow, record the semantic chain:
+
+```
+trigger/caller → entry point → inputs → transformations → consumer → required preconditions → terminal outcome
+```
+
+Verify:
+
+- required downstream context is propagated from the authoritative source
+- behavior-significant inputs are not ignored, discarded, overwritten, or replaced by unsafe defaults
+- distinct semantic inputs/actions/resources do not accidentally converge to the same downstream operation
+- the consumer's actual required contract is satisfied, including route/API/runtime preconditions
+- the advertised user action reaches its intended terminal outcome
+- paired operations preserve resource/entity identity where applicable
+
+Challenge at least one applicable counterexample:
+
+- missing required context
+- ignored action-specific input
+- stale/default context
+- semantic collapse of two distinct intents
+- syntactically valid but semantically incomplete destination state
+- visible action with no real terminal operation
+- wrong resource/entity selected after a mapping or boundary transformation
+
+This is a global failure-class check. Do not add feature-specific examples to the general prompt.
+
+### 5. State transitions
 
 If the task changes status, lifecycle, approval, or other mutable state, define:
 
@@ -169,7 +198,7 @@ Current state + action → next state
 
 Also identify forbidden transitions and duplicate-execution behavior.
 
-### 5. Boundary matrix
+### 6. Boundary matrix
 
 For API, DB, queue, external service, cache, or file boundaries, record:
 
@@ -179,7 +208,7 @@ Boundary | Input | Output | Failure | Retry | Duplicate | Transaction timing
 
 Do not implement an external side effect until its transaction timing and failure behavior are understood.
 
-### 6. Data mutation impact
+### 7. Data mutation impact
 
 For write operations, explicitly identify:
 
@@ -190,7 +219,7 @@ For write operations, explicitly identify:
 - downstream events/notifications
 - authorization/ownership checks
 
-### 7. Verification mapping
+### 8. Verification mapping
 
 Map each important invariant/counterexample to verification:
 
@@ -239,6 +268,7 @@ Counterexamples:
 - C2: scenario → expected safe behavior → verification
 
 State transitions: ... | N/A
+End-to-end flow contract: ... | N/A
 Boundary matrix: ... | N/A
 Data mutation impact: ... | N/A
 Residual unknowns: ...
