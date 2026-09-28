@@ -34,7 +34,25 @@ Missing material evidence is `Unknown`; unresolved high-impact unknowns block ap
 
 Map each requirement to diff evidence. Mark Done / Partial / Missing.
 
-### Failure analysis
+### End-to-end flow integrity
+
+For each changed behavior that crosses a boundary, trace:
+
+```
+trigger → handler → arguments → transformation → consumer → terminal outcome
+```
+
+Check:
+
+- required downstream context is preserved
+- behavior-significant inputs are consumed
+- distinct semantic intents/resources/actions do not collapse accidentally
+- the actual consumer contract and preconditions are satisfied
+- the visible action performs the advertised operation
+- paired operations preserve entity/resource identity when applicable
+
+Use at least one applicable counterexample: missing context, ignored input, stale/default value, semantic collapse, wrong target/resource, incomplete destination state, or non-functional visible action.
+
 
 Challenge applicable cases:
 
@@ -99,6 +117,7 @@ Verdict follows the canonical review baseline and unresolved material risk rules
 - [ ] Requirement and selected diff read.
 - [ ] Evidence gate completed or unknowns recorded.
 - [ ] Failure analysis completed.
+- [ ] End-to-end flow integrity checked for changed boundary-crossing behaviors.
 - [ ] High-risk invariants challenged.
 - [ ] Shared/public impact checked.
 - [ ] Verification evidence supports the verdict.
