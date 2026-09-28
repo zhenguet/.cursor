@@ -96,21 +96,31 @@ For each high-risk change, evaluate all applicable patterns:
 1. **Boundary transform integrity**
    - encode/decode/parse/serialize/normalize round-trip semantics.
    - adversarial inputs: reserved delimiters, empty values, nested payloads, repeated keys.
-2. **State-source merge correctness**
+2. **End-to-end flow / semantic contract integrity**
+   - Trace trigger/caller → handler → arguments → transformation → consumer → terminal outcome.
+   - Required downstream context must survive every boundary.
+   - Behavior-significant inputs must be consumed; ignored/discarded/defaulted inputs require explicit justification.
+   - Distinct semantic intents, resources, document types, entities, or action modes must not accidentally collapse into the same downstream operation.
+   - Inspect the actual destination/consumer contract and preconditions, not only the caller or schema.
+   - Visible actions must reach their advertised terminal behavior.
+   - Paired flows must preserve semantic resource identity where applicable.
+   - Counterexamples: omitted required context, stale/default context, ignored input, semantic collapse, incomplete destination state, wrong resource/entity, or non-functional visible action.
+
+3. **State-source merge correctness**
    - absent vs present-empty vs present-value semantics.
    - no stale fallback restoring old state unexpectedly.
-3. **Async/race ordering**
+4. **Async/race ordering**
    - stale response overwrite, double-submit, non-idempotent retries.
    - **action-boundary race:** primary data is actionable while required secondary/derived state is still loading; verify the action cannot consume incomplete state.
    - **request replacement:** an older lookup completing after a newer lookup must not overwrite the current authoritative state.
-4. **Post-mutation query consistency**
+5. **Post-mutation query consistency**
    - after a mutation removes rows from the active filtered/paginated set, the follow-up fetch must not reuse stale page/cursor/selection/aggregates.
    - counterexample to try: act on the entire last page (or the only matching rows) and check the refetched view is non-empty and selection is cleared.
-5. **Contract compatibility**
+6. **Contract compatibility**
    - producer/consumer shape or semantic drift (types, field meaning, enum/state transitions).
-6. **Failure-path behavior**
+7. **Failure-path behavior**
    - timeout/4xx/5xx/permission/partial failures do not break invariants.
-7. **Cross-caller regression risk**
+8. **Cross-caller regression risk**
    - shared utilities/services do not silently break existing callers.
 
 At least one adversarial counterexample per applicable pattern is required in analysis notes.
