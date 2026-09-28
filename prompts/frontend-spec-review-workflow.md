@@ -60,6 +60,31 @@ Do not infer product requirements from implementation when the specification is 
 - state/persistence updates
 - navigation/action result
 
+### End-to-end flow integrity
+
+For every changed user-visible or externally observable flow, trace:
+
+```
+user/system trigger
+→ handler
+→ arguments
+→ mapping/transformation
+→ route/API/store/service
+→ consumer preconditions
+→ terminal result
+```
+
+Verify the semantic contract, not only types or immediate API success:
+
+- all required downstream context is propagated
+- action-specific inputs are actually consumed
+- distinct actions/resources/intents remain distinguishable
+- destination/API preconditions are satisfied
+- the visible action reaches its advertised terminal behavior
+- paired upload/download or create/read flows preserve resource identity when applicable
+
+Challenge applicable counterexamples such as missing required context, ignored input, stale/default state, semantic collapse, wrong selected resource, or a visible action with no executable terminal operation.
+
 ### Failure and boundary behavior
 
 - validation and server error mapping
@@ -127,6 +152,7 @@ Preserve the original finding, add new evidence, update status, and re-run the r
 - [ ] Required reference workflow completed.
 - [ ] Only triggered skills loaded.
 - [ ] Real implementation flow traced.
+- [ ] Changed user-visible/external flows were checked end-to-end for contract completeness, semantic identity, input consumption, destination preconditions, and terminal behavior.
 - [ ] Applicable defect patterns challenged.
 - [ ] High-risk invariants falsified.
 - [ ] Unknowns and runtime limitations reported.
