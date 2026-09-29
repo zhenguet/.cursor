@@ -4,7 +4,7 @@
 
 Read this prompt before Standard or High implementation, planning, refactoring, or spec-driven review.
 
-Skip for Trivial and Quick work that passes the Quick gate in `AGENTS.md`; record the waiver.
+Skip for Trivial and Quick work that passes the Quick gate in `AGENTS.md`. Do not produce a reference map, Implementation Risk Contract, plan, or approval gate for those tasks unless the user explicitly requests one.
 
 The goal is to collect enough evidence to make implementation decisions confidently — not to hit a file count or reference quota.
 
@@ -87,6 +87,8 @@ If legacy is irrelevant, mark it `N/A`.
 ---
 
 ## Defect-prevention gate — BEFORE IMPLEMENTATION
+
+This gate applies to Standard/High implementation only. Trivial/Quick implementation follows the execution gate in `AGENTS.md` and proceeds directly to the smallest safe change plus proportional verification.
 
 Do not treat the implementation plan as complete until the task has a concise **Implementation Risk Contract**.
 
@@ -237,7 +239,7 @@ Prefer **general failure classes over feature-specific examples**. When a bug re
 
 ## Output
 
-Include this block before implementation:
+For Standard/High implementation, include this block before implementation. For Trivial/Quick implementation, omit it and execute directly.
 
 ```text
 ### Reference files crosscheck
