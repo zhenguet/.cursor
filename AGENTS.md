@@ -64,6 +64,15 @@ Classify the request before choosing workflow:
 
 For **REVIEW** and **PLAN**, do not modify application, prompt, config, schema, or infrastructure files unless the current-turn request explicitly includes fixing/implementing the findings.
 
+### Execution gate
+
+Choose execution style from the effective risk level, unless the user explicitly requests a plan:
+
+- **Trivial / Quick IMPLEMENT**: execute directly. Do not generate a plan, request plan approval, pause for approval, or produce a pre-implementation analysis artifact. Read the minimum context required, make the change, then verify it.
+- **Standard / High IMPLEMENT**: complete the required evidence/risk workflow, provide the concise before-implementation plan, and stop for approval before editing.
+- If new evidence raises a Trivial/Quick task into **Standard/High**, stop before the additional edits and switch to the Standard/High planning gate.
+- An explicit user request for a plan overrides the no-plan default even for Trivial/Quick work.
+
 ## Risk classification
 
 | Risk | Typical scope | Workflow |
