@@ -101,7 +101,7 @@ Every finding must identify a specific location, failure mode, and correction.
 
 When rewriting is requested:
 
-1. Present the approval plan required by `AGENTS.md`.
+1. Present the approval plan only when required by the execution gate in `AGENTS.md`; for Trivial/Quick implementation, do not add a planning or approval step unless the user explicitly requests one.
 2. Rewrite the affected prompt as a coherent document, not disconnected patches.
 3. Re-read the result against all analysis dimensions.
 4. Validate internal paths, cross-references, triggers, and output requirements.
