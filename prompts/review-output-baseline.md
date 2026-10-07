@@ -121,6 +121,13 @@ Do not stop at type compatibility or syntactic correctness. The purpose is to de
    - Verify that the downstream operation's required state is actually established before the action executes.
    - Challenge action timing when required derived, fetched, or persisted state is incomplete or stale.
 
+
+9. **Query / result-set consistency**
+   - Treat one logical search/filter condition as a shared predicate across every affected result surface.
+   - Verify that content, total/count, page count, ordering, and exports/CSV/downloads represent the same semantic dataset.
+   - Challenge client-side filtering after server-side pagination when totals/page counts remain unfiltered.
+   - Challenge list vs export/summary paths that consume the same search state with different predicates.
+
 ### Generic counterexample families
 
 For each applicable flow, attempt at least one counterexample from the relevant classes:
@@ -135,6 +142,8 @@ For each applicable flow, attempt at least one counterexample from the relevant 
 - paired operation acts on a different resource than the one displayed/selected
 - intermediate transformation silently drops or rewrites business-significant meaning
 - action executes before required secondary state is ready
+- filter is applied after pagination while count/page count remain unfiltered
+- list and export/summary paths apply different predicates for the same search state
 
 These are reusable failure classes. Do not encode feature-specific field names, ticket numbers, or one-off bug examples into the global prompt.
 
@@ -202,6 +211,7 @@ For async derived-state changes, include action-boundary timing coverage or stat
 - [ ] Destination/consumer preconditions and contracts were inspected
 - [ ] User-visible actions reach their advertised terminal behavior
 - [ ] Paired/round-trip flows preserve the same semantic resource when applicable
+- [ ] Query/filter semantics remain consistent across result content, pagination, counts, ordering, and exports/summaries when applicable
 
 - [ ] Findings are evidence-based and severity-ordered
 - [ ] No style-only findings without concrete negative consequence

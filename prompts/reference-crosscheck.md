@@ -139,6 +139,33 @@ Choose one contract backed by the product behavior: disable/block the action, wa
 
 Also verify that a stale value from a previous request cannot be mistaken for the current request's completed state.
 
+
+### 2a. Query / result-set consistency
+
+When one logical search/filter condition affects multiple result surfaces, treat them as one semantic dataset.
+
+Verify all applicable dimensions use the same predicate:
+
+```text
+search/filter
+→ result content
+→ pagination
+→ total/count/page count
+→ ordering
+→ export/CSV/download
+→ summary/aggregate
+```
+
+In particular:
+
+- Verify whether filtering happens before pagination, or that the API supplies a filtered count/page contract.
+- Do not filter only the already-paginated page while retaining totals/page counts from the unfiltered dataset.
+- Trace every consumer of the applied search state; removing or renaming a filter for one output requires proving equivalent semantics for every other output.
+- Challenge a multi-page dataset where the filter removes records from the current page and a later page contains matches.
+- Challenge an export/CSV generated from the same search conditions and verify that it contains the same semantic predicate as the visible result.
+
+A missing predicate on one result surface is a contract inconsistency, not a cosmetic difference.
+
 ### 3. Validation/normalization rules
 
 When the task adds or changes a validator, parser, formatter, sanitizer, or normalizer, do not verify only obvious-valid and obvious-invalid examples.

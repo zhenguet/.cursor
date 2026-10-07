@@ -86,6 +86,18 @@ File count does not determine risk.
 
 Quick is allowed only when the change is localized and touches none of the High-risk surfaces above.
 
+
+### Query / result-set consistency escalation
+
+Treat work that changes one logical search or filter condition across multiple result surfaces as at least **Standard** risk. This includes changes that affect any of the following combinations:
+
+- filter + pagination / total count / page count
+- filter + export / CSV / download
+- filter + summary / aggregate
+- server-side predicate ↔ client-side predicate
+
+For these tasks, the search condition is one semantic invariant across all affected outputs. Verification **MUST** establish that result content, total/count, page count, ordering, and exported/summary data represent the same filtered dataset. A client-side filter applied after an unfiltered paginated fetch is not equivalent unless the pagination/count contract is also filtered consistently.
+
 ## Prompt routing
 
 Read this file first, then select the narrowest primary workflow.
