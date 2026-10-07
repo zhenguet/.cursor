@@ -1,0 +1,42 @@
+---
+description: claude-mem persistent memory and token-efficient code reading
+alwaysApply: true
+---
+
+claude-mem MCP tools live in the `plugin-claude-mem-mcp-search` namespace. They complement graphify; they do not replace it.
+
+| Need | Tool |
+|---|---|
+| Code structure, dependencies, impact | graphify (see `graphify.mdc`) |
+| Prior decisions, bugfixes, discoveries from past sessions | claude-mem memory search |
+| Reading code after graphify has oriented you | `smart_outline` / `smart_unfold` |
+
+## Memory search
+
+**SHOULD** search memory at the start of Standard/High tasks, and whenever the task references earlier work ("again", "like last time", a previously fixed bug, a prior decision).
+
+**MUST** follow the layered workflow; never fetch full details without filtering first:
+
+1. `search` (query, optional `project`, `obs_type`, `dateStart`) → index with IDs
+2. `timeline` (`anchor` = ID) → surrounding context
+3. `get_observations` (filtered `ids`) → full details
+4. `get_tool_uses` → raw tool I/O, only when the summary is insufficient
+
+`search` requires a `query` or at least one filter.
+
+Memory is historical evidence, not current truth. **MUST** verify any recalled fact against the current code before relying on it. If search returns nothing, continue with the normal workflow; do not retry with paraphrased queries more than once.
+
+## Code reading
+
+After graphify identifies the target files/symbols:
+
+- `smart_outline` (file_path) → symbol signatures with bodies folded, instead of reading a whole large file
+- `smart_unfold` (file_path, symbol_name) → full source of one symbol
+- `smart_search` (query, path) → AST symbol search scoped to a repo directory
+
+Use `Read` when line numbers are needed for an edit, or when the file is small. If a `smart_*` tool returns `Could not parse`, fall back to `Read` for the rest of the task.
+
+## Boundaries
+
+- **MUST NOT** edit `claude-mem-context.mdc`; it is generated and overwritten by claude-mem hooks.
+- **MUST NOT** restart the claude-mem worker or change `~/.claude-mem/settings.json` unless the user asks. Report memory outages to the user instead.

@@ -10,3 +10,7 @@ mcp.local.json
 
 # Local tool state
 .cursor-local/
+
+# claude-mem machine-specific hooks and generated context
+hooks.json
+rules/claude-mem-context.mdc
