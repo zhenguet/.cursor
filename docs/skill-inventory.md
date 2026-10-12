@@ -77,12 +77,16 @@ These skills were selected from high-signal public security skill repositories a
 | `research` | MANUAL | High | Technical/API/documentation research |
 | `to-spec` | MANUAL | High | Turn discussion into an implementation spec |
 | `to-tickets` | MANUAL | High | Break approved work into tracer-bullet tickets |
+| `implement-spec` | MANUAL/GUARDED | High | Implement an approved to-spec/to-tickets graph; do not auto-route (may conflict with explicit Git-write policy depending on tracker workflow) |
+| `pr` | MANUAL | High | Draft PR body from a fixed template |
+| `retro` | MANUAL | Medium/High | Session retrospective for agent-environment improvements |
 | `triage` | MANUAL | High | Issue/PR triage and agent-ready briefs |
 | `wayfinder` | MANUAL | High | Very large multi-session engineering planning |
 | `grill-me` | CONDITIONAL | Medium/High | Clarify and challenge plans/decisions |
 | `grill-with-docs` | CONDITIONAL | Medium/High | Plan interrogation with documentation context |
 | `grilling` | CONDITIONAL | Medium/High | Requirement/domain clarification |
 | `handoff` | MANUAL | Medium | Agent/human handoff workflow |
+| `chief-of-staff` | MANUAL/NON-CORE | Medium | Long-running multi-subagent coordination; user-invoked only |
 
 ### Runtime / toolchain / platform — software-relevant but specialized
 
@@ -118,14 +122,18 @@ These are **not missing** from the workspace. They are intentionally outside nor
 ```text
 ask-matt
 caveman
+chief-of-staff
 claude-handoff
 git-guardrails-claude-code
 handoff
+implement-spec
 loop-me
 migrate-to-shoehorn
+pr
 prototype
 research
 resolving-merge-conflicts
+retro
 scaffold-exercises
 setup-matt-pocock-skills
 setup-pre-commit

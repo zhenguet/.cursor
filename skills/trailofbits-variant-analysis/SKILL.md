@@ -1,79 +1,80 @@
----
+﻿---
 name: trailofbits-variant-analysis
 description: >-
-  Finds other instances of a known vulnerability, logic bug, or bad pattern by
-  extracting its root cause and systematically generalizing the search pattern.
-  Use after a concrete defect is found to prevent the same root cause from
-  remaining elsewhere. Adapted from Trail of Bits variant-analysis.
+  Finds other instances of a known vulnerability, logic bug, or bad pattern by extracting its root cause and systematically generalizing the search pattern. Use after a concrete defect is found to hunt variants across the codebase.
 source: https://github.com/trailofbits/skills/tree/main/plugins/variant-analysis
 source-license: CC-BY-SA-4.0
 license: CC-BY-SA-4.0
-adaptation: Condensed adaptation for this workspace; not an unmodified upstream copy.
+adaptation: Workspace adaptation of Trail of Bits variant-analysis; local skill name and provenance frontmatter retained.
 ---
-
 # Variant Analysis
 
-Use this skill after a concrete defect is known. The goal is to generalize the root cause rather than add another one-off bug example to workspace prompts.
+Find the other instances of a bug you have already found. One root cause usually has several
+manifestations, and they are rarely in the module where you found the first one.
 
 ## When to Use
 
-- A vulnerability or logic bug has been confirmed and similar instances may exist.
-- A new bug exposes a reusable failure pattern.
-- A CodeQL or Semgrep rule should be generalized from a known instance.
-- A review needs to determine whether a regression exists elsewhere in the codebase.
+- A vulnerability has been found and you need to search for similar instances
+- Building or refining CodeQL/Semgrep queries for security patterns
+- Performing systematic code audits after an initial issue discovery
+- Analyzing how a single root cause manifests in different code paths
 
 ## When NOT to Use
 
-- Initial vulnerability discovery with no known defect.
-- Generic code review without a concrete pattern.
-- Product-intent clarification.
-- Fix recommendations before the root cause is understood.
+- Initial vulnerability discovery â€” use audit-context-building or a domain-specific audit
+- General code review with no known pattern to search for
+- Writing fix recommendations â€” use issue-writer
+- Understanding unfamiliar code â€” use audit-context-building first
 
-## Workflow
+## The Five Steps
 
-### 1. Extract the root cause
+Read the reference for a step when you reach it.
 
-Describe why the original code is wrong, not merely what value or file triggered it. Identify the violated invariant, trust boundary, unsafe assumption, input/state pattern, missing validation or authorization, and concurrency/lifecycle condition.
+**1. Understand the original issue.** Extract the root cause â€” why the code is wrong, not
+what it does â€” and enumerate the directions a variant could hide in: related identifiers,
+other manifestations of the same mistake, data-type edge cases.
+â†’ [references/root-cause.md](references/root-cause.md)
 
-### 2. Create an exact match
+**2. Create an exact match.** Write a pattern matching ONLY the known instance and confirm
+it hits. A pattern that matches nothing means you have misunderstood the bug, and every
+search built on it is calibrated against the wrong code.
 
-Build the narrowest search that matches the known instance. Confirm that it finds the original defect before generalizing.
+**3â€“4. Generalize one element at a time.** Climb from the exact match toward the pattern
+family, running and reading all matches after each single change. Stop when more than half
+the matches are noise.
+â†’ [references/searching.md](references/searching.md) â€” abstraction ladder, tool selection,
+false-positive filters
 
-### 3. Generalize one dimension at a time
+**5. Triage.** Decide which candidates are real, and say so with a severity attached.
+â†’ [references/triage.md](references/triage.md)
 
-Change one element of the pattern per iteration. Review every match after each change. Stop when noise dominates the result set.
+**Then write it up**, including the patterns that failed and a CI rule to prevent regression.
+â†’ [references/reporting.md](references/reporting.md)
 
-Useful dimensions include alternate identifiers, equivalent API calls, different data types, different lifecycle states, equivalent validation omissions, and alternate callers/resource boundaries.
+## Running it as a Workflow
 
-### 4. Triage candidates
+This plugin ships `/variant-analysis:variants`, which runs the five steps across parallel
+subagents â€” one per expansion axis, looping until the sweep stops finding anything new.
+Each stage reads the reference above that matches its job.
 
-Classify each candidate as `confirmed variant`, `false positive`, or `requires additional evidence`. Do not convert similarity into a finding without evidence.
+Use the workflow when the codebase is large or the root cause has many manifestations. Work
+the steps directly when the search is narrow or you want a say in each generalization.
 
-### 5. Prevent recurrence
+## What Makes Hunts Fail
 
-When the root cause is reusable, update the canonical rule owner, test, validator, or security skill. Do not add a permanent list of concrete bug examples to general prompts.
+1. **Narrow scope** â€” searching only the module the original bug was in
+2. **Pattern too specific** â€” searching one attribute and missing the family around it
+3. **One vulnerability class** â€” chasing a single manifestation of the root cause
+4. **Happy-path testing** â€” never trying the null, empty, and boundary cases
+5. **Generalizing too fast** â€” abstracting several elements at once, so noise cannot be
+   attributed to any one of them
 
-## Failure modes to avoid
+The first three are covered in root-cause.md and searching.md, the fourth in triage.md.
 
-- Searching only the original module.
-- Searching for one concrete value instead of the root cause.
-- Generalizing multiple dimensions at once.
-- Treating every look-alike as a vulnerability.
-- Stopping after the first matching variant.
-- Adding every discovered value to a global prompt instead of improving the rule.
+## Resources
 
-## Output
+**CodeQL** (`resources/codeql/`): `python.ql`, `javascript.ql`, `java.ql`, `go.ql`, `cpp.ql`
 
-```text
-### Variant Analysis
+**Semgrep** (`resources/semgrep/`): `python.yaml`, `javascript.yaml`, `java.yaml`, `go.yaml`, `cpp.yaml`
 
-Original finding: ...
-Root cause: ...
-Invariant violated: ...
-Search pattern: ...
-Variants checked: ...
-Confirmed variants: ...
-False positives: ...
-Unknowns: ...
-Canonical rule/test updated: ...
-```
+**Report**: `resources/variant-report-template.md`

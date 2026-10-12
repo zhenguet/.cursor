@@ -12,7 +12,11 @@ if (-not (Test-Path $GraphJson)) {
 
 Set-Location $WorkspaceRoot
 Write-Host "=== graphify update (AST-only): $WorkspaceRoot ===" -ForegroundColor Cyan
-graphify update .
+# graphify may warn on stderr when community labels are stale; do not treat as script failure.
+$PrevEap = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+graphify update . 2>&1 | ForEach-Object { Write-Host $_ }
+$ErrorActionPreference = $PrevEap
 if ($LASTEXITCODE -ne 0) {
     Write-Error "graphify update failed (exit $LASTEXITCODE)"
 }
