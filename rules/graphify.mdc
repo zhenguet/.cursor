@@ -7,7 +7,7 @@ This workspace has a single graphify knowledge graph at the TMV workspace root: 
 
 **MUST** run every graphify CLI command (`query`, `path`, `explain`, `update`, full rebuild) with working directory = TMV workspace root only.
 
-**MUST NOT** run graphify from any child directory (e.g. `tmv-hrm`, `tmv-hrm-be`, `tmv-hrm-scripts`). Do not create or refresh `graphify-out/` outside the workspace root.
+**MUST NOT** run graphify from any child directory (e.g. `HRM/tmv-hrm`, `HRM/tmv-hrm-be`, `HRM/tmv-hrm-scripts`). Do not create or refresh `graphify-out/` outside the workspace root.
 
 **MANDATORY: Before using Read, Grep, Glob, or Bash to explore the codebase, you MUST run graphify first from workspace root:**
 - `graphify query "<question>"` — scoped subgraph for any codebase or architecture question
