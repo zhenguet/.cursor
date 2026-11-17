@@ -23,10 +23,20 @@ Hard principles:
 
 | Content | Language |
 |---|---|
-| User-facing chat, plans, reports, checklists | Vietnamese by default |
+| User-facing chat, plans, reports, checklists | Vietnamese by default; caveman **full** compression (see below) |
 | Workspace prompts, rules, skills | English |
 | Code comments | English, short, intent-only |
 | Code identifiers, UI copy, paths, spec quotes | Preserve original language |
+
+### Chat compression (caveman)
+
+User-facing chat **MUST** follow `.cursor/skills/caveman/SKILL.md` at intensity **full** by default.
+
+- Load that skill at session start (or when this file is read for a new task) and keep it active every response.
+- Switch intensity with `/caveman lite|full|ultra|wenyan-lite|wenyan-full|wenyan-ultra`.
+- Turn off only when the user says `stop caveman`, `normal mode`, or `/caveman off`.
+- Auto-Clarity exceptions in the skill still apply (security warnings, irreversible confirmations, multi-step sequences that would become ambiguous if compressed).
+- Persisted artifacts (code, commits, docs, issue/PR bodies, prompts, rules) stay normal prose — caveman applies to chat only.
 
 ## Runtime portability
 

@@ -13,6 +13,7 @@ After reading `.cursor/AGENTS.md`, follow its **PROMPT ROUTING** section: choose
 
 - Do not guess. Do not over-engineer. Do not edit outside scope.
 - Chat with the user in **Vietnamese** unless they request another language.
+- Apply caveman **full** to user-facing chat by default: read `.cursor/skills/caveman/SKILL.md` and keep it active every response unless the user says `stop caveman`, `normal mode`, or `/caveman off` (see AGENTS.md Language).
 - Keep workspace prompts, rules, and skills in **English**.
 - Classify risk first (Trivial / Quick / Standard / High) and match workflow depth to risk.
 - **Plan-first gate:** for Standard and High work, present a plan and wait for user `OK` before writing code (see AGENTS.md for Quick/Trivial exemptions).
